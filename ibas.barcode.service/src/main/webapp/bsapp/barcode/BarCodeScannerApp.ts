@@ -5,7 +5,6 @@
  * Use of this source code is governed by an Apache License, Version 2.0
  * that can be found in the LICENSE file at http://www.apache.org/licenses/LICENSE-2.0
  */
-
 import * as ibas from "ibas/index";
 import * as bo from "../../borep/bo/index";
 
@@ -32,15 +31,25 @@ export class BarCodeScannerApp extends ibas.ResidentApplication<IBarCodeScannerV
     run(): void {
         super.run.apply(this, arguments);
     }
+    private scanType: emBarCodeType;
     /** 视图显示后 */
     protected viewShowed(): void {
         // 视图加载完成
+        this.scanType = emBarCodeType.BAR_CODE;
+        this.view.showScanner(this.scanType);
     }
+}
+/** 条码类型 */
+export enum emBarCodeType {
+    /** 条码 */
+    BAR_CODE,
+    /** 二维码 */
+    QR_CODE
 }
 /** 视图-条码扫描 */
 export interface IBarCodeScannerView extends ibas.IResidentView {
     // 扫描
     scanEvent: Function;
     // 显示屏幕
-    showSacnner(): void;
+    showScanner(type: emBarCodeType): void;
 }
