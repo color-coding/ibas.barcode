@@ -30,7 +30,7 @@ export class Console extends ibas.ModuleConsole {
         // 注册功能
         // 注册服务应用
         // 注册常驻应用
-        this.register(new BarCodeScannerApp());
+        // this.register(new BarCodeScannerApp());
     }
     /** 运行 */
     run(): void {
