@@ -17,7 +17,7 @@ export class BarCodeScannerView extends ibas.BOResidentView implements IBarCodeS
     // 扫描
     scanEvent: Function;
     /** 绘制工具条视图 */
-    darwBar(): any {
+    drawBar(): any {
         let that: this = this;
         // 不重复创建工具条钮
         if (ibas.objects.isNull(this.bar)) {
@@ -34,7 +34,7 @@ export class BarCodeScannerView extends ibas.BOResidentView implements IBarCodeS
     }
     private bar: sap.m.Button;
     /** 绘制视图 */
-    darw(): any {
+    draw(): any {
         let that: this = this;
         return new sap.m.Dialog("", {
             title: this.title,
