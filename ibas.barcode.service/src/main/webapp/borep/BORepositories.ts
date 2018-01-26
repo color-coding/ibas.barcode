@@ -9,14 +9,14 @@
 import * as ibas from "ibas/index";
 import * as bo from "./bo/index";
 import { IBORepositoryBarCode, BO_REPOSITORY_BARCODE } from "../api/index";
-import { DataConverter4bc } from "./DataConverters";
+import { DataConverter4BC } from "./DataConverters";
 
 /** 业务对象仓库 */
 export class BORepositoryBarCode extends ibas.BORepositoryApplication implements IBORepositoryBarCode {
 
     /** 创建此模块的后端与前端数据的转换者 */
     protected createConverter(): ibas.IDataConverter {
-        return new DataConverter4bc;
+        return new DataConverter4BC;
     }
     /**
      * 上传文件
