@@ -13,6 +13,6 @@
 namespace barcode {
     export namespace bo {
         // 注册业务对象仓库到工厂
-        ibas.boFactory.register(BO_REPOSITORY_BARCODE, BORepositoryBarCode);
+        boFactory.register(BO_REPOSITORY_BARCODE, BORepositoryBarCode);
     }
 }
