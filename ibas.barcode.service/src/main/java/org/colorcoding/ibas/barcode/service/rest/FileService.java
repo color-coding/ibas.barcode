@@ -179,7 +179,7 @@ public class FileService extends FileRepositoryService {
 			String suffix = this.getParameterValue(parameterMap, "suffix", "png");
 			Hashtable<EncodeHintType, Object> hints = new Hashtable<EncodeHintType, Object>();
 			// 指定纠错等级
-			hints.put(EncodeHintType.ERROR_CORRECTION, ErrorCorrectionLevel.H);
+			hints.put(EncodeHintType.ERROR_CORRECTION, this.getParameterValue(parameterMap, "level",ErrorCorrectionLevel.H));
 			// 指定编码格式
 			hints.put(EncodeHintType.CHARACTER_SET, "UTF-8");
 			// 设置白边
@@ -239,7 +239,7 @@ public class FileService extends FileRepositoryService {
 			String suffix = this.getParameterValue(parameterMap, "suffix", "png");
 			Hashtable<EncodeHintType, Object> hints = new Hashtable<EncodeHintType, Object>();
 			// 指定纠错等级
-			hints.put(EncodeHintType.ERROR_CORRECTION, ErrorCorrectionLevel.H);
+			hints.put(EncodeHintType.ERROR_CORRECTION, this.getParameterValue(parameterMap, "level",ErrorCorrectionLevel.H));
 			// 指定编码格式
 			hints.put(EncodeHintType.CHARACTER_SET, "UTF-8");
 			// 设置白边
