@@ -171,8 +171,8 @@ public class FileService extends FileRepositoryService {
 			int width = this.getParameterValue(parameterMap, "width", 300);
 			//设置默认高度
 			int height = this.getParameterValue(parameterMap, "height", 30);
-			//默认title,未指定则使用content
-			String title = this.getParameterValue(parameterMap, "title", content);
+			//默认title
+			String title = this.getParameterValue(parameterMap, "title", "");
 			//默认字号
 			Integer fontSize = this.getParameterValue(parameterMap, "fontsize", 15);
 			//默认压缩格式
