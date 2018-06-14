@@ -94,16 +94,15 @@ namespace barcode {
                                     readers: ["code_128_reader"]
                                 }
                             }, function (err: any): void {
-                                function onDetected(data: any): void {
-                                    that.fireViewEvents(that.scanEvent, data.codeResult.code);
-                                }
                                 if (err) {
                                     ibas.logger.log(ibas.emMessageLevel.ERROR, err);
                                     return;
                                 }
                                 ibas.logger.log("Quagga: ready to start.");
                                 (<any>window).Quagga.start();
-                                (<any>window).Quagga.onDetected(onDetected);
+                                (<any>window).Quagga.onDetected(function (data: any): void {
+                                    that.fireViewEvents(that.scanEvent, data.codeResult.code);
+                                });
                             });
                         },
                         function (err: RequireError): void {
