@@ -25,6 +25,9 @@ namespace barcode {
                     case app.BarCodeScannerApp.APPLICATION_ID:
                         view = new m.BarCodeScannerView();
                         break;
+                    case app.BarCodeScannerService.APPLICATION_ID:
+                        view = new c.BarCodeScannerView();
+                        break;
                     default:
                         break;
                 }
