@@ -74,28 +74,36 @@ namespace barcode {
                     let that: this = this;
                     let libraries: string[] = [];
                     if (ibas.config.get(ibas.CONFIG_ITEM_DEBUG_MODE, false)) {
-                        libraries.push("../../../3rdparty/quagga");
+                        libraries.push("3rdparty/quagga");
                     } else {
-                        libraries.push("../../../3rdparty/quagga.min");
+                        libraries.push("3rdparty/quagga.min");
                     }
+                    // 使用此模块库加载器
+                    let require: Require = ibas.requires.create({
+                        context: ibas.requires.naming(CONSOLE_NAME),
+                    });
                     require(libraries,
                         function (): void {
                             (<any>window).Quagga.init({
                                 inputStream: {
                                     name: "Live",
                                     type: "LiveStream",
-                                    target: document.querySelector("bar_code_scanner")
+                                    target: document.querySelector("#bar_code_scanner")
                                 },
                                 decoder: {
                                     readers: ["code_128_reader"]
                                 }
                             }, function (err: any): void {
+                                function onDetected(data: any): void {
+                                    that.fireViewEvents(that.scanEvent, data.codeResult.code);
+                                }
                                 if (err) {
                                     ibas.logger.log(ibas.emMessageLevel.ERROR, err);
                                     return;
                                 }
                                 ibas.logger.log("Quagga: ready to start.");
                                 (<any>window).Quagga.start();
+                                (<any>window).Quagga.onDetected(onDetected);
                             });
                         },
                         function (err: RequireError): void {
@@ -113,7 +121,13 @@ namespace barcode {
                     let that: this = this;
                     let libraries: string[] = [];
                 }
-
+                /** 关闭之后 */
+                onClosed(): void {
+                    if (!ibas.objects.isNull((<any>window).Quagga)) {
+                        (<any>window).Quagga.stop();
+                        // (<any>window).Quagga.offDetected(this.onDetected);
+                    }
+                }
             }
         }
     }

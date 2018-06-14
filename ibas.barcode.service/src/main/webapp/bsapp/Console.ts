@@ -6,6 +6,7 @@
  * that can be found in the LICENSE file at http://www.apache.org/licenses/LICENSE-2.0
  */
 /// <reference path="../3rdparty/ibas/index.d.ts" />
+/// <reference path="../3rdparty/shell/index.d.ts" />
 /// <reference path="../borep/index.ts" />
 /// <reference path="./barcode/index.ts" />
 
@@ -30,6 +31,7 @@ namespace barcode {
             protected registers(): void {
                 // 注册功能
                 // 注册服务应用
+                this.register(new BarCodeScannerServiceMapping());
                 // 注册常驻应用
                 // this.register(new BarCodeScannerApp());
             }

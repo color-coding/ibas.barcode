@@ -7,7 +7,6 @@
  */
 namespace barcode {
     export namespace app {
-
         /** 应用-条码扫描 */
         export class BarCodeScannerApp extends ibas.ResidentApplication<IBarCodeScannerView> {
             /** 应用标识 */
@@ -21,37 +20,27 @@ namespace barcode {
                 this.name = BarCodeScannerApp.APPLICATION_NAME;
                 this.description = ibas.i18n.prop(this.name);
             }
-            private refresh: boolean = true;
             /** 注册视图 */
             protected registerView(): void {
                 super.registerView();
                 // 其他事件
             }
-            /** 运行,覆盖原方法 */
-            run(): void {
-                super.run.apply(this, arguments);
-            }
-            private scanType: emBarCodeType;
             /** 视图显示后 */
             protected viewShowed(): void {
                 // 视图加载完成
-                this.scanType = emBarCodeType.BAR_CODE;
-                this.view.showScanner(this.scanType);
             }
-        }
-        /** 条码类型 */
-        export enum emBarCodeType {
-            /** 条码 */
-            BAR_CODE,
-            /** 二维码 */
-            QR_CODE
-        }
-        /** 视图-条码扫描 */
-        export interface IBarCodeScannerView extends ibas.IResidentView {
-            // 扫描
-            scanEvent: Function;
-            // 显示屏幕
-            showScanner(type: emBarCodeType): void;
+            /** 激活完整视图 */
+            protected showFullView(): void {
+                let that: this = this;
+                ibas.servicesManager.runApplicationService<IBarCodeScannerContract, string>({
+                    proxy: new BarCodeScannerServiceProxy({
+
+                    }),
+                    onCompleted(result: string): void {
+                        that.proceeding("scan code:" + result);
+                    }
+                });
+            }
         }
     }
 }

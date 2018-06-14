@@ -2,5 +2,6 @@
   "barcode": "条码工具",
   "barcode_icon": "sap-icon://bar-code",
   "barcode_app_barcodescanner": "条码扫描",
+  "barcode_service_barcodescanner": "条码扫描",
   "barcode_closing_delimiter": "----结束----"
 }
