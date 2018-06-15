@@ -130,22 +130,7 @@ public class FileService extends FileRepositoryService {
 	}
 
 	@GET
-	@Path("createCode")
-	public void createCode(@QueryParam("type") String type, @QueryParam("token") String token,
-						   @QueryParam("content") String content,
-						   @Context HttpServletRequest request,
-						   @Context HttpServletResponse response) {
-		if (BARCODE_SIGN.equals(type)) {
-			// 如果type为"1",生成一维条码
-			createBarCode(token, content, request, response);
-		} else {
-			// 否则,生成二维码
-			createQRCode(token, content, request, response);
-		}
-	}
-
-	@GET
-	@Path("createBarCode")
+	@Path("barcode")
 	public void createBarCode(@QueryParam("token") String token,
 							  @QueryParam("content") String content,
 							  @Context HttpServletRequest request,
@@ -202,7 +187,7 @@ public class FileService extends FileRepositoryService {
 	}
 
 	@GET
-	@Path("createQRCode")
+	@Path("qrcode")
 	public void createQRCode(@QueryParam("token") String token,
 							 @QueryParam("content") String content,
 							 @Context HttpServletRequest request,
