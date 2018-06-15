@@ -9,6 +9,7 @@
 /// <reference path="../3rdparty/shell/index.d.ts" />
 /// <reference path="../borep/index.ts" />
 /// <reference path="./barcode/index.ts" />
+/// <reference path="./demo/index.ts" />
 
 namespace barcode {
     export namespace app {
@@ -30,6 +31,7 @@ namespace barcode {
             /** 初始化 */
             protected registers(): void {
                 // 注册功能
+                // this.register(new BarCodeCreatorFunc());
                 // 注册服务应用
                 this.register(new BarCodeScannerServiceMapping());
                 // 注册常驻应用
