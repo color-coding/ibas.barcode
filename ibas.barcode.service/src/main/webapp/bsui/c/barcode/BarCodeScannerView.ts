@@ -34,7 +34,7 @@ namespace barcode {
                 /** 绘制视图 */
                 draw(): any {
                     let that: this = this;
-                    return new sap.m.Dialog("", {
+                    let dialog: sap.m.Dialog = new sap.m.Dialog("", {
                         title: this.title,
                         type: sap.m.DialogType.Standard,
                         state: sap.ui.core.ValueState.None,
@@ -43,7 +43,7 @@ namespace barcode {
                         verticalScrolling: true,
                         content: [
                             new sap.ui.core.HTML("", {
-                                content: "<div id=\"bar_code_scanner\"></div>",
+                                content: "<div id=\"bar_code_scanner\"><video id=\"video\" style=\"border: 1px solid gray\"></video></div>",
                                 preferDOM: false,
                                 sanitizeContent: true,
                                 visible: true,
@@ -60,50 +60,89 @@ namespace barcode {
                             }),
                         ]
                     });
+                    // sap.m.Dialog的buttons属性中只能添加Button,这里重写其校验方法
+                    // sap.ui.unified.FileUploader上传控件仅显示按钮时也可添加
+                    let validateAggregation: Function = dialog.validateAggregation;
+                    dialog.validateAggregation = function (sAggregationName: string, oObject: sap.ui.base.ManagedObject | any, bMultiple: boolean): any {
+                        if (sAggregationName === "buttons" && oObject instanceof sap.ui.unified.FileUploader) {
+                            // 仅显示按钮
+                            if (oObject.getButtonOnly()) {
+                                return oObject;
+                            }
+                        } else {
+                            return validateAggregation.apply(dialog, arguments);
+                        }
+                    };
+                    dialog.insertButton(<any>new sap.ui.unified.FileUploader("", {
+                        buttonOnly: true,
+                        buttonText: ibas.i18n.prop("barcode_btn_decodelocalimage"),
+                        multiple: false,
+                        uploadOnChange: false,
+                        style: sap.m.ButtonType.Transparent,
+                        width: "auto",
+                        fileType: ["jpg", "jpeg", "png", "bmp"],
+                        mimeType: ["image/jpeg", "image/png", "image/bmp"],
+                        change: function (oEvent: sap.ui.base.Event): void {
+                            let files: File[] = oEvent.getParameter("files");
+                            if (ibas.objects.isNull(files) || files.length === 0) {
+                                return;
+                            }
+                            let oURL: any = window.URL || (<any>window).webkitURL;
+                            let imageUrl: string = oURL.createObjectURL(files[0]);
+                            if (!ibas.objects.isNull(that.codeReader)) {
+                                that.codeReader.decodeFromImage(undefined, imageUrl)
+                                    .then((result) => {
+                                        that.fireViewEvents(that.scanEvent, result.text);
+                                    }).catch((err) => {
+                                        // 解码失败
+                                        that.application.viewShower.proceeding(that,
+                                            ibas.emMessageType.ERROR,
+                                            ibas.i18n.prop("barcode_msg_notfoundcode"),
+                                        );
+                                        that.decodeFromInputVideoDevice();
+                                    });
+                            }
+                        },
+                    }), 0);
+                    return dialog;
                 }
+                codeReader: any;
                 // 显示屏幕
                 showScanner(type: app.emBarCodeType): void {
-                    if (type === app.emBarCodeType.BAR_CODE) {
-                        this.scanBarCode();
-                    } else if (type === app.emBarCodeType.QR_CODE) {
-                        this.scanQRCode();
-                    }
-                }
-                // 扫描条码
-                scanBarCode(): void {
                     let that: this = this;
                     let libraries: string[] = [];
                     if (ibas.config.get(ibas.CONFIG_ITEM_DEBUG_MODE, false)) {
-                        libraries.push("3rdparty/quagga");
+                        libraries.push("3rdparty/zxing");
                     } else {
-                        libraries.push("3rdparty/quagga.min");
+                        libraries.push("3rdparty/zxing.min");
                     }
                     // 使用此模块库加载器
                     let require: Require = ibas.requires.create({
                         context: ibas.requires.naming(CONSOLE_NAME),
                     });
                     require(libraries,
-                        function (): void {
-                            (<any>window).Quagga.init({
-                                inputStream: {
-                                    name: "Live",
-                                    type: "LiveStream",
-                                    target: document.querySelector("#bar_code_scanner")
-                                },
-                                decoder: {
-                                    readers: ["code_128_reader"]
+                        function (zxing: any): void {
+                            if (ibas.objects.isNull(that.codeReader)) {
+                                if (ibas.objects.isNull(type)) {
+                                    type = app.emBarCodeType.ALL;
                                 }
-                            }, function (err: any): void {
-                                if (err) {
-                                    ibas.logger.log(ibas.emMessageLevel.ERROR, err);
-                                    return;
+                                switch (type) {
+                                    case app.emBarCodeType.BAR_CODE:
+                                        // 仅支持条码扫描
+                                        that.codeReader = new zxing.BrowserBarcodeReader();
+                                        break;
+                                    case app.emBarCodeType.QR_CODE:
+                                        // 仅支持二维码扫描
+                                        that.codeReader = new zxing.BrowserQRCodeReader();
+                                        break;
+                                    case app.emBarCodeType.ALL:
+                                    default:
+                                        // 支持条码/二维码扫描
+                                        that.codeReader = new zxing.BrowserMultiCodeReader();
+                                        break;
                                 }
-                                ibas.logger.log("Quagga: ready to start.");
-                                (<any>window).Quagga.start();
-                                (<any>window).Quagga.onDetected(function (data: any): void {
-                                    that.fireViewEvents(that.scanEvent, data.codeResult.code);
-                                });
-                            });
+                            }
+                            that.decodeFromInputVideoDevice();
                         },
                         function (err: RequireError): void {
                             // 类库加载失败
@@ -115,16 +154,37 @@ namespace barcode {
                         }
                     );
                 }
-                // 扫描二维码
-                scanQRCode(): void {
+                // 从视频流中解码
+                decodeFromInputVideoDevice(): void {
                     let that: this = this;
-                    let libraries: string[] = [];
+                    if (ibas.objects.isNull(that.codeReader)) {
+                        return;
+                    }
+                    let firstDeviceId: any;
+                    that.codeReader.getVideoInputDevices()
+                        .then((videoInputDevices) => {
+                            if (!!videoInputDevices && videoInputDevices.length > 0) {
+                                firstDeviceId = videoInputDevices[0].deviceId;
+                                that.codeReader.decodeFromInputVideoDevice(firstDeviceId, "video")
+                                    .then((result) => {
+                                        that.fireViewEvents(that.scanEvent, result.text);
+                                    }).catch((err) => {
+                                        // 解码失败
+                                        that.application.viewShower.messages({
+                                            type: ibas.emMessageType.ERROR,
+                                            title: err.name,
+                                            message: err.message,
+                                        });
+                                    });
+                            } else {
+                                // 没找到摄像头
+                            }
+                        });
                 }
                 /** 关闭之后 */
                 onClosed(): void {
-                    if (!ibas.objects.isNull((<any>window).Quagga)) {
-                        (<any>window).Quagga.stop();
-                        // (<any>window).Quagga.offDetected(this.onDetected);
+                    if (!ibas.objects.isNull(this.codeReader)) {
+                        this.codeReader.reset();
                     }
                 }
             }

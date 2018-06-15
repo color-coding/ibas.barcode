@@ -19,6 +19,8 @@ namespace barcode {
     export namespace app {
         /** 条码类型 */
         export enum emBarCodeType {
+            /** 所有 */
+            ALL,
             /** 条码 */
             BAR_CODE,
             /** 二维码 */
@@ -43,6 +45,8 @@ namespace barcode {
         }
         /** 条码/二维码扫描契约 */
         export interface IBarCodeScannerContract extends ibas.IServiceContract {
+            /** 扫码类型 */
+            scanType?: emBarCodeType;
         }
         /** 条码/二维码扫描服务代理 */
         export class BarCodeScannerServiceProxy extends ibas.ServiceProxy<IBarCodeScannerContract> {

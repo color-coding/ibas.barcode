@@ -34,6 +34,9 @@ namespace barcode {
                 this.register(new BarCodeScannerServiceMapping());
                 // 注册常驻应用
                 // this.register(new BarCodeScannerApp());
+                // 注册扫描方法
+                this.register(new ScanMethodApp());
+                this.register(new ScanMethodWechat());
             }
             /** 运行 */
             run(): void {

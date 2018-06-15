@@ -3,5 +3,7 @@
   "barcode_icon": "sap-icon://bar-code",
   "barcode_app_barcodescanner": "条码扫描",
   "barcode_service_barcodescanner": "条码扫描",
+  "barcode_btn_decodelocalimage": "本地图片",
+  "barcode_msg_notfoundcode": "图片中未找到条码/二维码",
   "barcode_closing_delimiter": "----结束----"
 }

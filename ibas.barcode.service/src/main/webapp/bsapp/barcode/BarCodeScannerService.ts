@@ -32,6 +32,11 @@ namespace barcode {
                         }
                     });
                 } else {
+                    if (ibas.objects.isNull(contract.scanType)) {
+                        this.scanType = emBarCodeType.ALL;
+                    } else {
+                        this.scanType = contract.scanType;
+                    }
                     this.show();
                 }
             }
@@ -45,7 +50,6 @@ namespace barcode {
             /** 视图显示后 */
             protected viewShowed(): void {
                 // 视图加载完成
-                this.scanType = emBarCodeType.BAR_CODE;
                 this.view.showScanner(this.scanType);
             }
             private scan(result: string): void {
