@@ -34,7 +34,7 @@ namespace barcode {
                 let that: this = this;
                 ibas.servicesManager.runApplicationService<IBarCodeScannerContract, string>({
                     proxy: new BarCodeScannerServiceProxy({
-
+                        scanType: emBarCodeType.ALL
                     }),
                     onCompleted(result: string): void {
                         that.proceeding("scan code:" + result);
