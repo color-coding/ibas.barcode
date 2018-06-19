@@ -12,7 +12,7 @@ namespace barcode {
             /**
              * 视图-条码扫描
              */
-            export class BarCodeCreatorView extends c.BarCodeScannerView {
+            export class BarCodeCreatorView extends c.BarCodeCreatorView {
 
             }
         }
