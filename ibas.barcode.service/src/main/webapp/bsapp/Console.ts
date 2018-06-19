@@ -31,7 +31,7 @@ namespace barcode {
             /** 初始化 */
             protected registers(): void {
                 // 注册功能
-                // this.register(new BarCodeCreatorFunc());
+                this.register(new BarCodeCreatorFunc());
                 // 注册服务应用
                 this.register(new BarCodeScannerServiceMapping());
                 // 注册常驻应用
@@ -62,7 +62,7 @@ namespace barcode {
                     uiModules.push("index.ui.c");
                 }
                 let that: this = this;
-                this.loadUI(uiModules, function (ui: any): void {
+                this.loadUI(uiModules, function(ui: any): void {
                     // 设置导航
                     that._navigation = new ui.Navigation();
                     // 调用初始化
