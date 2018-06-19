@@ -195,9 +195,7 @@ namespace barcode {
                         encodeURIComponent(this.title), this.fontSize, this.suffix,
                         encodeURIComponent(this.logo), this.margin, this.level);
                 }
-                // 加#号是为了把后面的字符串都作为hash处理,避免作为参数传入,引发错误
-                // sap.m.Image 会在src后面追加@1.5等字符串
-                return ibas.strings.format("{0}{1}#", this.address, result);
+                return ibas.strings.format("{0}{1}", this.address, result);
             }
         }
     }

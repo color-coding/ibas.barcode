@@ -235,7 +235,9 @@ namespace barcode {
                                             path: "/",
                                             formatter(value: any): string {
                                                 if (!ibas.objects.isNull(value)) {
-                                                    return value.toString();
+                                                    // 加#号是为了把后面的字符串都作为hash处理,避免作为参数传入,引发错误
+                                                    // sap.m.Image 会在src后面追加@1.5等字符串
+                                                    return ibas.strings.format("{0}#", value.toString());
                                                 }
                                             }
                                         }
