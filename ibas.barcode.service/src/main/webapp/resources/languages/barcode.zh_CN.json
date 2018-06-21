@@ -22,6 +22,7 @@
   "barcode_btn_scan":"扫一扫",
   "barcode_btn_save":"保存图片",
   "barcode_btn_copylink":"复制链接",
+  "barcode_msg_copysuccess":"复制成功",
   "barcode_unrealized_method":"该方法暂未实现",
   "barcode_msg_level_must_be_h_when_has_logo":"有logo图片的时候,纠错级别必须为H",
   "em_bar_code":"条形码",

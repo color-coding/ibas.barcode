@@ -238,10 +238,21 @@ namespace barcode {
                                             if (ibas.objects.isNull(param)) {
                                                 return;
                                             }
-                                            that.application.viewShower.proceeding(that,
-                                                ibas.emMessageType.INFORMATION,
-                                                ibas.i18n.prop("barcode_unrealized_method"),
-                                            );
+                                            let input: JQuery = $("<input>");
+                                            $("body").append(input);
+                                            input.val(param.toString()).select();
+                                            if (document.execCommand("copy")) {
+                                                that.application.viewShower.proceeding(that,
+                                                    ibas.emMessageType.INFORMATION,
+                                                    ibas.i18n.prop("barcode_msg_copysuccess"),
+                                                );
+                                            } else {
+                                                that.application.viewShower.proceeding(that,
+                                                    ibas.emMessageType.INFORMATION,
+                                                    ibas.i18n.prop("barcode_unrealized_method"),
+                                                );
+                                            }
+                                            input.remove();
                                         }
                                     }),
                                     new sap.m.Button("", {
@@ -297,20 +308,11 @@ namespace barcode {
                                             }
                                         }
                                     }),
-                                    new sap.m.Link("", {
-                                        target: "_blank",
+                                    new sap.m.Label("", {
                                         wrapping: true,
                                         textAlign: sap.ui.core.TextAlign.Center,
                                         width: "100%",
                                         text: {
-                                            path: "/",
-                                            formatter(value: any): string {
-                                                if (!ibas.objects.isNull(value)) {
-                                                    return value.toString();
-                                                }
-                                            }
-                                        },
-                                        href: {
                                             path: "/",
                                             formatter(value: any): string {
                                                 if (!ibas.objects.isNull(value)) {
