@@ -21,7 +21,24 @@ namespace barcode {
                 return false;
             }
             scan(caller: IMethodCaller<string>): void {
-                caller.onCompleted("unrealized method");
+                let that: this = this;
+                // 负责接收App扫描条码后的结果
+                let message: EventListener = function (e: MessageEvent): void {
+                    if (!e.origin.startsWith("http://localhost")) {
+                        return;
+                    }
+                    let data: any = e.data["app.barcodeScanner"];
+                    if (ibas.objects.isNull(data)) {
+                        return;
+                    }
+                    caller.onCompleted(!data.cancelled ? data.text : "");
+                    // 移除对App发送消息的监听
+                    window.removeEventListener("message", message);
+                };
+                // 监听App发送的消息
+                window.addEventListener("message", message);
+                // 向App发送信息,请求调用条码扫描功能
+                window.parent.postMessage("app.barcodeScanner", "*");
             }
         }
     }
