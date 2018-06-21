@@ -9,7 +9,7 @@
 /// <reference path="../3rdparty/shell/index.d.ts" />
 /// <reference path="../borep/index.ts" />
 /// <reference path="./barcode/index.ts" />
-/// <reference path="./demo/index.ts" />
+/// <reference path="./creator/index.ts" />
 
 namespace barcode {
     export namespace app {

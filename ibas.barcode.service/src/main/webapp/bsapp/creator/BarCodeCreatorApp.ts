@@ -15,7 +15,7 @@ namespace barcode {
             /** 应用标识 */
             static APPLICATION_ID: string = "a317b233-0d1b-4ba5-906f-044fa6567ad7";
             /** 应用名称 */
-            static APPLICATION_NAME: string = "barcode_app_creatordemo";
+            static APPLICATION_NAME: string = "barcode_app_barcodecreator";
             /** 构造函数 */
             constructor() {
                 super();

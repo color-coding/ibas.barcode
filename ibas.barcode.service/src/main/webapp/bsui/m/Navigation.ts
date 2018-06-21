@@ -9,7 +9,7 @@
 /// <reference path="../../3rdparty/openui5/index.d.ts" />
 /// <reference path="../../index.d.ts" />
 /// <reference path="./barcode/index.ts" />
-/// <reference path="./demo/index.ts" />
+/// <reference path="./creator/index.ts" />
 namespace barcode {
     export namespace ui {
         /**
@@ -31,6 +31,7 @@ namespace barcode {
                         break;
                     case app.BarCodeCreatorApp.APPLICATION_ID:
                         view = new m.BarCodeCreatorView();
+                        break;
                     default:
                         break;
                 }
