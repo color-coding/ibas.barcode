@@ -28,6 +28,23 @@ namespace barcode {
                         scanType: emBarCodeType.ALL
                     }),
                     onCompleted(result: IScanResult): void {
+                        if (result.cancelled) {
+                            // 用户取消扫码,不处理
+                        } else {
+                            let moduleConsole: ibas.ModuleConsole;
+                            for (let i: number = 0; i < shell.app.consoleManager.modules().length; i++) {
+                                let console: ibas.IModule = shell.app.consoleManager.modules()[i];
+                                if (console instanceof ibas.ModuleConsole) {
+                                    if (console.id === CONSOLE_ID) {
+                                        moduleConsole = console;
+                                    }
+                                }
+                            }
+                            if (!ibas.objects.isNull(moduleConsole)) {
+                                moduleConsole.viewShower.proceeding(null,
+                                    ibas.emMessageType.INFORMATION, "scan code:" + result.text);
+                            }
+                        }
                     }
                 });
                 return null;
