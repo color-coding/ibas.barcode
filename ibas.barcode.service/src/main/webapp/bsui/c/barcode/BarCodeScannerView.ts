@@ -55,7 +55,10 @@ namespace barcode {
                                 type: sap.m.ButtonType.Transparent,
                                 // icon: "sap-icon://inspect-down",
                                 press: function (): void {
-                                    that.fireViewEvents(that.closeEvent);
+                                    that.fireViewEvents(that.scanEvent, {
+                                        cancelled: true,
+                                        text: undefined
+                                    });
                                 }
                             }),
                         ]
@@ -92,7 +95,10 @@ namespace barcode {
                             if (!ibas.objects.isNull(that.codeReader)) {
                                 that.codeReader.decodeFromImage(undefined, imageUrl)
                                     .then((result) => {
-                                        that.fireViewEvents(that.scanEvent, result.text);
+                                        that.fireViewEvents(that.scanEvent, {
+                                            cancelled: false,
+                                            text: result.text
+                                        });
                                     }).catch((err) => {
                                         // 解码失败
                                         that.application.viewShower.proceeding(that,
@@ -167,7 +173,10 @@ namespace barcode {
                                 firstDeviceId = videoInputDevices[0].deviceId;
                                 that.codeReader.decodeFromInputVideoDevice(firstDeviceId, "video")
                                     .then((result) => {
-                                        that.fireViewEvents(that.scanEvent, result.text);
+                                        that.fireViewEvents(that.scanEvent, {
+                                            cancelled: false,
+                                            text: result.text
+                                        });
                                     }).catch((err) => {
                                         // 解码失败
                                         that.application.viewShower.messages({

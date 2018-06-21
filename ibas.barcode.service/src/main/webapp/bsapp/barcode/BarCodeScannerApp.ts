@@ -32,12 +32,16 @@ namespace barcode {
             /** 激活完整视图 */
             protected showFullView(): void {
                 let that: this = this;
-                ibas.servicesManager.runApplicationService<IBarCodeScannerContract, string>({
+                ibas.servicesManager.runApplicationService<IBarCodeScannerContract, IScanResult>({
                     proxy: new BarCodeScannerServiceProxy({
                         scanType: emBarCodeType.ALL
                     }),
-                    onCompleted(result: string): void {
-                        that.proceeding("scan code:" + result);
+                    onCompleted(result: IScanResult): void {
+                        if (result.cancelled) {
+                            // 用户取消扫码,不处理
+                        } else {
+                            that.proceeding("scan code:" + result.text);
+                        }
                     }
                 });
             }

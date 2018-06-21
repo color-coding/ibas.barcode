@@ -8,7 +8,7 @@
 namespace barcode {
     export namespace app {
         /** 条码/二维码扫描服务 */
-        export class BarCodeScannerService extends ibas.ServiceWithResultApplication<IBarCodeScannerView, IBarCodeScannerContract, string> {
+        export class BarCodeScannerService extends ibas.ServiceWithResultApplication<IBarCodeScannerView, IBarCodeScannerContract, IScanResult> {
             /** 应用标识 */
             static APPLICATION_ID: string = "21f27f92-416e-4127-b9f5-005e8dd4110d";
             /** 应用名称 */
@@ -27,7 +27,7 @@ namespace barcode {
                 let method: ScanMethod = methods.firstOrDefault(c => c.enabled);
                 if (!ibas.objects.isNull(method)) {
                     method.scan({
-                        onCompleted(result: string): void {
+                        onCompleted(result: IScanResult): void {
                             that.fireCompleted(result);
                         }
                     });
@@ -52,7 +52,7 @@ namespace barcode {
                 // 视图加载完成
                 this.view.showScanner(this.scanType);
             }
-            private scan(result: string): void {
+            private scan(result: IScanResult): void {
                 this.fireCompleted(result);
             }
         }

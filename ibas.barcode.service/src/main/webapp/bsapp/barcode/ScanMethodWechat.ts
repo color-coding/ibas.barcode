@@ -20,8 +20,11 @@ namespace barcode {
                 }
                 return false;
             }
-            scan(caller: IMethodCaller<string>): void {
-                caller.onCompleted("unrealized method");
+            scan(caller: IMethodCaller<IScanResult>): void {
+                caller.onCompleted({
+                    cancelled: false,
+                    text: "unrealized method"
+                });
             }
         }
     }

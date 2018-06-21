@@ -23,11 +23,11 @@ namespace barcode {
             /** 默认功能 */
             default(): ibas.IApplication<ibas.IView> {
                 let that: this = this;
-                ibas.servicesManager.runApplicationService<IBarCodeScannerContract, string>({
+                ibas.servicesManager.runApplicationService<IBarCodeScannerContract, IScanResult>({
                     proxy: new BarCodeScannerServiceProxy({
                         scanType: emBarCodeType.ALL
                     }),
-                    onCompleted(result: string): void {
+                    onCompleted(result: IScanResult): void {
                     }
                 });
                 return null;

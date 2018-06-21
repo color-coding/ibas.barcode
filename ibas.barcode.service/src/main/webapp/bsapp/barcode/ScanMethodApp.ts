@@ -20,7 +20,7 @@ namespace barcode {
                 }
                 return false;
             }
-            scan(caller: IMethodCaller<string>): void {
+            scan(caller: IMethodCaller<IScanResult>): void {
                 let that: this = this;
                 // 负责接收App扫描条码后的结果
                 let message: EventListener = function (e: MessageEvent): void {
@@ -31,7 +31,10 @@ namespace barcode {
                     if (ibas.objects.isNull(data)) {
                         return;
                     }
-                    caller.onCompleted(!data.cancelled ? data.text : "");
+                    caller.onCompleted({
+                        cancelled: !!!data.cancelled,
+                        text: data.text
+                    });
                     // 移除对App发送消息的监听
                     window.removeEventListener("message", message);
                 };

@@ -32,16 +32,23 @@ namespace barcode {
             caller?: any;
             /**
              * 调用完成
-             * @param opRslt 结果
+             * @param result 结果
              */
-            onCompleted(opRslt: T): void;
+            onCompleted(result: T): void;
+        }
+        /** 扫描结果 */
+        export interface IScanResult {
+            /** 用户主动取消扫描 */
+            cancelled: boolean;
+            /** 扫描结果 */
+            text: string;
         }
         /** 条码/二维码扫描方式 */
         export abstract class ScanMethod extends ibas.Element {
             /** 启用 */
             enabled: boolean;
             /** 扫描 */
-            abstract scan(caller: IMethodCaller<string>): void;
+            abstract scan(caller: IMethodCaller<IScanResult>): void;
         }
         /** 条码/二维码扫描契约 */
         export interface IBarCodeScannerContract extends ibas.IServiceContract {
