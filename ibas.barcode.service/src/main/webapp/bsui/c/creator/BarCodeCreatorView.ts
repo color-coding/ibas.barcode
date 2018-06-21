@@ -213,10 +213,21 @@ namespace barcode {
                                         if (ibas.objects.isNull(param)) {
                                             return;
                                         }
-                                        that.application.viewShower.proceeding(that,
-                                            ibas.emMessageType.INFORMATION,
-                                            ibas.i18n.prop("barcode_unrealized_method"),
-                                        );
+                                        let input: JQuery = $("<input>");
+                                        $("body").append(input);
+                                        input.val(param.toString()).select();
+                                        if (document.execCommand("copy")) {
+                                            that.application.viewShower.proceeding(that,
+                                                ibas.emMessageType.INFORMATION,
+                                                ibas.i18n.prop("barcode_msg_copysuccess"),
+                                            );
+                                        } else {
+                                            that.application.viewShower.proceeding(that,
+                                                ibas.emMessageType.INFORMATION,
+                                                ibas.i18n.prop("barcode_unrealized_method"),
+                                            );
+                                        }
+                                        input.remove();
                                     }
                                 }),
                                 new sap.m.Button("", {
