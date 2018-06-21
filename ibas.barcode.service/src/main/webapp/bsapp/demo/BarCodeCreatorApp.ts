@@ -31,7 +31,6 @@ namespace barcode {
             protected registerView(): void {
                 super.registerView();
                 // 其他事件
-                this.view.scanEvent = this.scan;
             }
             private param: BarCodeCreatorParam;
             /** 视图显示后 */
@@ -40,26 +39,12 @@ namespace barcode {
                 this.param = new BarCodeCreatorParam();
                 this.view.showParam(this.param);
             }
-            /** 扫一扫 */
-            private scan(): void {
-                let that: this = this;
-                ibas.servicesManager.runApplicationService<IBarCodeScannerContract, string>({
-                    proxy: new BarCodeScannerServiceProxy({
-                        scanType: emBarCodeType.ALL
-                    }),
-                    onCompleted(result: string): void {
-                        that.proceeding("scan code:" + result);
-                    }
-                });
-            }
         }
         /** 示例视图-生成条码/二维码 */
         export interface IBarCodeCreatorView extends ibas.IView {
 
             // 显示参数
             showParam(param: BarCodeCreatorParam): void;
-            // 扫一扫
-            scanEvent: Function;
         }
     }
 }
