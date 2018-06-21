@@ -36,7 +36,7 @@ namespace barcode {
                 // 注册服务应用
                 this.register(new BarCodeScannerServiceMapping());
                 // 注册常驻应用
-                // this.register(new BarCodeScannerApp());
+                this.register(new BarCodeScannerApp());
                 // 注册扫描方法
                 this.register(new ScanMethodApp());
                 this.register(new ScanMethodWechat());
