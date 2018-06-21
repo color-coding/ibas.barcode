@@ -12,7 +12,7 @@ namespace barcode {
             /** 功能标识 */
             static FUNCTION_ID = "a8394854-8d54-46fd-a228-8fd992dd5b35";
             /** 功能名称 */
-            static FUNCTION_NAME = "barcode_func_creatordemo";
+            static FUNCTION_NAME = "barcode_func_barcodecreator";
             /** 构造函数 */
             constructor() {
                 super();
