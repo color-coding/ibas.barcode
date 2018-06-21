@@ -10,3 +10,4 @@
 /// <reference path="./ScanMethodWechat.ts" />
 /// <reference path="./BarCodeScannerApp.ts" />
 /// <reference path="./BarCodeScannerService.ts" />
+/// <reference path="./BarCodeScannerFunc.ts" />

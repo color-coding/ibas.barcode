@@ -15,31 +15,14 @@ namespace barcode {
                 protected masterPage: sap.m.Page;
                 protected detailsPage: sap.m.Page;
                 private form: sap.ui.layout.form.SimpleForm;
-                // 扫一扫
-                scanEvent: Function;
+                private image: sap.m.Image;
                 /** 绘制视图 */
                 draw(): any {
                     let that: this = this;
                     this.form = new sap.ui.layout.form.SimpleForm("", {
                         editable: true, // 编辑模式影响行高
                         content: [
-                            new sap.m.Toolbar("", {
-                                content: [
-                                    new sap.m.Label("", {
-                                        design: sap.m.LabelDesign.Bold,
-                                        text: ibas.i18n.prop("barcode_label_setting")
-                                    }),
-                                    new sap.m.ToolbarSpacer("", {}),
-                                    new sap.m.Button("", {
-                                        icon: "sap-icon://sort-descending",
-                                        text: ibas.i18n.prop("barcode_btn_scan"),
-                                        type: sap.m.ButtonType.Transparent,
-                                        press: function (event: any): void {
-                                            that.fireViewEvents(that.scanEvent);
-                                        }
-                                    })
-                                ]
-                            }),
+                            new sap.ui.core.Title("", { text: ibas.i18n.prop("barcode_label_setting") }),
                             new sap.m.Label("", { text: ibas.i18n.prop("barcode_param_codetype") }),
                             new sap.m.Select("", {
                                 width: "100%",
@@ -218,6 +201,54 @@ namespace barcode {
                     });
                     that.detailsPage = new sap.m.Page("", {
                         showHeader: false,
+                        footer: new sap.m.Toolbar("", {
+                            content: [
+                                new sap.m.ToolbarSpacer(""),
+                                new sap.m.Button("", {
+                                    text: ibas.i18n.prop("barcode_btn_copylink"),
+                                    type: sap.m.ButtonType.Transparent,
+                                    icon: "sap-icon://copy",
+                                    press: function (): void {
+                                        let param: app.BarCodeCreatorParam = that.param;
+                                        if (ibas.objects.isNull(param)) {
+                                            return;
+                                        }
+                                        that.application.viewShower.proceeding(that,
+                                            ibas.emMessageType.INFORMATION,
+                                            ibas.i18n.prop("barcode_unrealized_method"),
+                                        );
+                                    }
+                                }),
+                                new sap.m.Button("", {
+                                    text: ibas.i18n.prop("barcode_btn_save"),
+                                    type: sap.m.ButtonType.Transparent,
+                                    icon: "sap-icon://save",
+                                    press: function (): void {
+                                        let param: app.BarCodeCreatorParam = that.param;
+                                        if (ibas.objects.isNull(param)) {
+                                            return;
+                                        }
+                                        let fileName: string = ibas.strings.format("{0}.{1}",
+                                            ibas.strings.isEmpty(param.title) ? ibas.uuids.random() : param.title,
+                                            param.suffix);
+                                        let img: HTMLImageElement = new Image();
+                                        // 解决图片跨域问题 https://www.jianshu.com/p/6fe06667b748
+                                        img.setAttribute("crossOrigin", "Anonymous");
+                                        img.src = param.toString();
+                                        img.onload = function (): void {
+                                            let canvas: HTMLCanvasElement = document.createElement("canvas");
+                                            canvas.width = img.width;
+                                            canvas.height = img.height;
+                                            let ctx: CanvasRenderingContext2D = canvas.getContext("2d");
+                                            ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+                                            canvas.toBlob((data: Blob): void => {
+                                                ibas.files.save(data, fileName);
+                                            });
+                                        };
+                                    }
+                                }),
+                            ]
+                        }),
                         content: [
                             new sap.m.FlexBox("", {
                                 width: "100%",
@@ -229,7 +260,7 @@ namespace barcode {
                                 wrap: sap.m.FlexWrap.Wrap,
                                 direction: sap.m.FlexDirection.Column,
                                 items: [
-                                    new sap.m.Image("", {
+                                    that.image = new sap.m.Image("", {
                                         width: "{/width}px",
                                         src: {
                                             path: "/",
@@ -285,9 +316,11 @@ namespace barcode {
                     that.id = page.getId();
                     return page;
                 }
+                param: app.BarCodeCreatorParam;
                 // 显示参数
                 showParam(param: app.BarCodeCreatorParam): void {
                     let that: this = this;
+                    this.param = param;
                     let model: sap.ui.model.json.JSONModel = new sap.ui.model.json.JSONModel(param);
                     this.form.setModel(model);
                     this.form.bindObject("/");
