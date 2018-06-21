@@ -170,7 +170,8 @@ namespace barcode {
                     that.codeReader.getVideoInputDevices()
                         .then((videoInputDevices) => {
                             if (!!videoInputDevices && videoInputDevices.length > 0) {
-                                firstDeviceId = videoInputDevices[0].deviceId;
+                                // 默认使用最后一个摄像头,后续改为可以切换
+                                firstDeviceId = videoInputDevices[videoInputDevices.length - 1].deviceId;
                                 that.codeReader.decodeFromInputVideoDevice(firstDeviceId, "video")
                                     .then((result) => {
                                         that.fireViewEvents(that.scanEvent, {
