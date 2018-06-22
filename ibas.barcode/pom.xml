@@ -29,5 +29,10 @@
 			<artifactId>javase</artifactId>
 			<version>3.3.3</version>
 		</dependency>
+        <dependency>
+            <groupId>org.colorcoding.apps</groupId>
+            <artifactId>ibas.thirdpartyapp</artifactId>
+            <version>0.1.0</version>
+        </dependency>
 	</dependencies>
 </project>
