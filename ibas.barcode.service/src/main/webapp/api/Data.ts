@@ -42,6 +42,8 @@ namespace barcode {
             cancelled: boolean;
             /** 扫描结果 */
             text: string;
+            /** 错误 */
+            error?: Error;
         }
         /** 条码/二维码扫描方式 */
         export abstract class ScanMethod extends ibas.Element {

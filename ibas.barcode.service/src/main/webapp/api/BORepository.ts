@@ -7,6 +7,20 @@
  */
 namespace barcode {
     export namespace bo {
+        /**
+         * 微信签名相关调用者
+         */
+        export interface IWechatSignatureMethodCaller<P> extends ibas.IMethodCaller<P> {
+            /** 应用编码 */
+            app: string;
+            /** 当前页面地址 */
+            url?: string;
+            /**
+             * 调用完成
+             * @param opRslt 结果
+             */
+            onCompleted(opRslt: ibas.IOperationResult<P>): void;
+        }
 
         /** 业务仓库 */
         export interface IBORepositoryBarCode extends ibas.IBORepositoryApplication {
@@ -20,6 +34,11 @@ namespace barcode {
              * @param caller 调用者
              */
             download(caller: ibas.IDownloadFileCaller<Blob>): void;
+            /**
+             * 查询 微信签名
+             * @param fetcher 查询者
+             */
+            fetchWechatSignature(fetcher: IWechatSignatureMethodCaller<string>): void;
         }
     }
 }

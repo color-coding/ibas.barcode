@@ -41,8 +41,13 @@ namespace barcode {
                                 }
                             }
                             if (!ibas.objects.isNull(moduleConsole)) {
-                                moduleConsole.viewShower.proceeding(null,
-                                    ibas.emMessageType.INFORMATION, "scan code:" + result.text);
+                                if (ibas.objects.isNull(result.error)) {
+                                    moduleConsole.viewShower.proceeding(null,
+                                        ibas.emMessageType.INFORMATION, "scan code:" + result.text);
+                                } else {
+                                    moduleConsole.viewShower.proceeding(null,
+                                        ibas.emMessageType.ERROR, "scan code Error:" + result.error.message);
+                                }
                             }
                         }
                     }

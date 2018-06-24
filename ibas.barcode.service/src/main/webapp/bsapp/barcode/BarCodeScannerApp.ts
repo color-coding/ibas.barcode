@@ -40,7 +40,11 @@ namespace barcode {
                         if (result.cancelled) {
                             // 用户取消扫码,不处理
                         } else {
-                            that.proceeding("scan code:" + result.text);
+                            if (ibas.objects.isNull(result.error)) {
+                                that.proceeding("scan code:" + result.text);
+                            } else {
+                                that.proceeding(ibas.emMessageType.ERROR, "scan code Error:" + result.error.message);
+                            }
                         }
                     }
                 });
