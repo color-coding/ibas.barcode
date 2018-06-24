@@ -39,6 +39,27 @@ namespace barcode {
                 fileRepository.converter = this.createConverter();
                 fileRepository.download("download", caller);
             }
+            /**
+             * 查询 微信签名
+             * @param fetcher 查询者
+             */
+            fetchWechatSignature(fetcher: IWechatSignatureMethodCaller<string>): void {
+                let boRepository: ibas.BORepositoryAjax = new ibas.BORepositoryAjax();
+                boRepository.address = this.address;
+                boRepository.token = this.token;
+                boRepository.converter = this.createConverter();
+                let url: string = fetcher.url;
+                if (ibas.strings.isEmpty(url)) {
+                    // 去除哈希
+                    url = ibas.strings.format("{0}{1}{2}", window.location.origin,
+                        window.location.pathname, window.location.search);
+                }
+                url = encodeURIComponent(url);
+                let method: string =
+                    ibas.strings.format("fetchWechatSignature?app={0}&url={1}&token={2}",
+                        fetcher.app, url, this.token);
+                boRepository.callRemoteMethod(method, undefined, fetcher);
+            }
         }
     }
 }
