@@ -1,28 +1,32 @@
 package org.colorcoding.ibas.barcode.repository;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.JsonNodeFactory;
-import com.fasterxml.jackson.databind.node.ObjectNode;
-import org.colorcoding.ibas.bobas.common.*;
-import org.colorcoding.ibas.bobas.data.emYesNo;
-import org.colorcoding.ibas.bobas.i18n.I18N;
-import org.colorcoding.ibas.bobas.message.Logger;
-import org.colorcoding.ibas.bobas.message.MessageLevel;
-import org.colorcoding.ibas.bobas.organization.OrganizationFactory;
-import org.colorcoding.ibas.bobas.repository.BORepositoryServiceApplication;
-import org.colorcoding.ibas.thirdpartyapp.bo.application.Application;
-import org.colorcoding.ibas.thirdpartyapp.bo.application.IApplication;
-import org.colorcoding.ibas.thirdpartyapp.repository.BORepositoryThirdPartyApp;
-
-import javax.ws.rs.BadRequestException;
 import java.io.IOException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.security.MessageDigest;
 import java.util.Formatter;
-import java.util.Map;
 import java.util.UUID;
+
+import javax.ws.rs.BadRequestException;
+
+import org.colorcoding.ibas.bobas.common.Criteria;
+import org.colorcoding.ibas.bobas.common.ICondition;
+import org.colorcoding.ibas.bobas.common.ICriteria;
+import org.colorcoding.ibas.bobas.common.IOperationResult;
+import org.colorcoding.ibas.bobas.common.OperationResult;
+import org.colorcoding.ibas.bobas.data.emYesNo;
+import org.colorcoding.ibas.bobas.i18n.I18N;
+import org.colorcoding.ibas.bobas.message.Logger;
+import org.colorcoding.ibas.bobas.message.MessageLevel;
+import org.colorcoding.ibas.bobas.repository.BORepositoryServiceApplication;
+import org.colorcoding.ibas.thirdpartyapp.bo.application.Application;
+import org.colorcoding.ibas.thirdpartyapp.bo.application.IApplication;
+import org.colorcoding.ibas.thirdpartyapp.repository.BORepositoryThirdPartyApp;
+
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.JsonNodeFactory;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 
 /**
  * BarCode仓库
@@ -40,12 +44,13 @@ public class BORepositoryBarCode extends BORepositoryServiceApplication
 	 */
 	public final static String URL_TEMPLATE_JS_API_TICKET = "https://api.weixin.qq.com/cgi-bin/ticket/getticket?access_token=%s&type=jsapi";
 
-
 	/**
 	 * 获得微信签名,初始化微信JSSDK时使用
 	 *
-	 * @param appCode 应用编码
-	 * @param url     当前网页的URL，不包含#及其后面部分
+	 * @param appCode
+	 *            应用编码
+	 * @param url
+	 *            当前网页的URL，不包含#及其后面部分
 	 */
 	@Override
 	public IOperationResult<String> fetchWechatSignature(String appCode, String url) {
@@ -55,9 +60,12 @@ public class BORepositoryBarCode extends BORepositoryServiceApplication
 	/**
 	 * 获得微信签名,初始化微信JSSDK时使用
 	 *
-	 * @param appCode 应用编码
-	 * @param url     当前网页的URL，不包含#及其后面部分
-	 * @param token   口令
+	 * @param appCode
+	 *            应用编码
+	 * @param url
+	 *            当前网页的URL，不包含#及其后面部分
+	 * @param token
+	 *            口令
 	 */
 	@Override
 	public OperationResult<String> fetchWechatSignature(String appCode, String url, String token) {
@@ -88,7 +96,6 @@ public class BORepositoryBarCode extends BORepositoryServiceApplication
 		return opRslt;
 	}
 
-
 	// --------------------------------------------------------------------------------------------//
 	public JsonNode generateWechatSignature(String appId, String appSecret, String url) throws Exception {
 		JsonNodeFactory factory = JsonNodeFactory.instance;
@@ -104,13 +111,14 @@ public class BORepositoryBarCode extends BORepositoryServiceApplication
 			String join_str;
 			String signature = "";
 			// 注意这里参数名必须全部小写，且必须有序
-			join_str = String.format("jsapi_ticket=%s&noncestr=%s&timestamp=%s&url=%s", ticket, nonce_str, timestamp, url);
+			join_str = String.format("jsapi_ticket=%s&noncestr=%s&timestamp=%s&url=%s", ticket, nonce_str, timestamp,
+					url);
 			MessageDigest crypt = MessageDigest.getInstance("SHA-1");
 			crypt.reset();
 			crypt.update(join_str.getBytes("UTF-8"));
 			signature = byteToHex(crypt.digest());
 			rootNode.put("url", url);
-			//注意这里 要加上自己的appId
+			// 注意这里 要加上自己的appId
 			rootNode.put("appId", appId);
 			rootNode.put("jsapi_ticket", ticket);
 			rootNode.put("nonceStr", nonce_str);

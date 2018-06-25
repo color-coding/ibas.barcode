@@ -6,23 +6,21 @@ import java.io.InputStream;
 import java.util.Hashtable;
 
 import org.colorcoding.ibas.barcode.MyConfiguration;
+import org.colorcoding.ibas.barcode.utils.ZXingCodeException;
+import org.colorcoding.ibas.barcode.utils.ZXingCodeUtils;
 
 import com.google.zxing.BarcodeFormat;
 import com.google.zxing.EncodeHintType;
 import com.google.zxing.qrcode.decoder.ErrorCorrectionLevel;
 
 import junit.framework.TestCase;
-import org.colorcoding.ibas.barcode.utils.ZXingCodeException;
-import org.colorcoding.ibas.barcode.utils.ZXingCodeUtils;
 
 public class testZXingCodeUtils extends TestCase {
 
 	public void test1DCode() throws ZXingCodeException {
-
 		String txt = "hello world!";
 		String imgPath = MyConfiguration.getWorkFolder();
 		String imgName = "bar_code.png";
-		String suffix = "png";
 		File filePath = new File(imgPath);
 		if (!filePath.exists()) {
 			filePath.mkdirs();
@@ -44,7 +42,6 @@ public class testZXingCodeUtils extends TestCase {
 		String txt = "hello world!";
 		String imgPath = MyConfiguration.getWorkFolder();
 		String imgName = "qr_code.png";
-		String suffix = "png";
 		File filePath = new File(imgPath);
 		if (!filePath.exists()) {
 			filePath.mkdirs();
