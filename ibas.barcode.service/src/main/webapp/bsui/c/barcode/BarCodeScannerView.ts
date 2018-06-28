@@ -205,7 +205,8 @@ namespace barcode {
                     });
                     let svgCss: string = "position:absolute;top:0;left:0;bottom:0;right:0;";
                     let rectCss: string = "fill:black;fill-opacity:0.6;";
-                    let lineCss: string = "stroke:red;stroke-width:3;";
+                    let lineCss: string = "stroke:#30e630;stroke-width:3;";
+                    let animateLineCss: string = "stroke:#30e630;stroke-width:2;fill-opacity:0.6;";
                     $("#bar_code_scanner").append(ibas.strings.format(
                         "<svg width='100%' height='100%' version='1.1' xmlns='http://www.w3.org/2000/svg' style='{0}'> \
                             <rect x='0' y='0' width='100%' height='25%' style='{1}'></rect> \
@@ -220,8 +221,12 @@ namespace barcode {
                             <line x1='25%' y1='75%' x2='30%' y2='75%' style='{2}'></line> \
                             <line x1='75%' y1='75%' x2='75%' y2='70%' style='{2}'></line> \
                             <line x1='75%' y1='75%' x2='70%' y2='75%' style='{2}'></line> \
+                            <line x1='27%' y1='25%' x2='73%' y2='25%' style='{3}'> \
+                                <animate attributeName='y1' from='25%' to='75%' dur='3s' repeatCount='indefinite' /> \
+                                <animate attributeName='y2' from='25%' to='75%' dur='3s' repeatCount='indefinite' /> \
+                            </line> \
                         </svg>"
-                        , svgCss, rectCss, lineCss)
+                        , svgCss, rectCss, lineCss, animateLineCss)
                     );
                 }
                 /** 关闭之后 */
