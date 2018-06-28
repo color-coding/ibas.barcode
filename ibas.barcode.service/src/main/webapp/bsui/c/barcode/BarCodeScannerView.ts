@@ -43,7 +43,7 @@ namespace barcode {
                         verticalScrolling: true,
                         content: [
                             new sap.ui.core.HTML("", {
-                                content: "<div id=\"bar_code_scanner\"><video id=\"video\" style=\"border: 1px solid gray\"></video></div>",
+                                content: "<div id=\"bar_code_scanner\"><video id=\"video\"></video></div>",
                                 preferDOM: false,
                                 sanitizeContent: true,
                                 visible: true,
@@ -110,6 +110,12 @@ namespace barcode {
                             }
                         },
                     }), 0);
+                    if (ibas.config.get(ibas.CONFIG_ITEM_PLANTFORM) === ibas.emPlantform.PHONE) {
+                        // 移动端加个按钮撑一下空间,不然上传控件太靠左了
+                        dialog.insertButton(new sap.m.Button("", {
+                            type: sap.m.ButtonType.Transparent,
+                        }), 0);
+                    }
                     return dialog;
                 }
                 codeReader: any;
@@ -186,10 +192,37 @@ namespace barcode {
                                             message: err.message,
                                         });
                                     });
+                                that.prettify();
                             } else {
                                 // 没找到摄像头
                             }
                         });
+                }
+                /** 修饰/美化界面 */
+                prettify(): void {
+                    $("#video").css({
+                        border: "1px solid gray"
+                    });
+                    let svgCss: string = "position:absolute;top:0;left:0;bottom:0;right:0;";
+                    let rectCss: string = "fill:black;fill-opacity:0.6;";
+                    let lineCss: string = "stroke:red;stroke-width:3;";
+                    $("#bar_code_scanner").append(ibas.strings.format(
+                        "<svg width='100%' height='100%' version='1.1' xmlns='http://www.w3.org/2000/svg' style='{0}'> \
+                            <rect x='0' y='0' width='100%' height='25%' style='{1}'></rect> \
+                            <rect x='0' y='25%' width='25%' height='50%' style='{1}'></rect> \
+                            <rect x='75%' y='25%' width='25%' height='50%' style='{1}'></rect> \
+                            <rect x='0' y='75%' width='100%' height='25%' style='{1}'></rect> \
+                            <line x1='25%' y1='25%' x2='25%' y2='30%' style='{2}'></line> \
+                            <line x1='25%' y1='25%' x2='30%' y2='25%' style='{2}'></line> \
+                            <line x1='75%' y1='25%' x2='75%' y2='30%' style='{2}'></line> \
+                            <line x1='75%' y1='25%' x2='70%' y2='25%' style='{2}'></line> \
+                            <line x1='25%' y1='75%' x2='25%' y2='70%' style='{2}'></line> \
+                            <line x1='25%' y1='75%' x2='30%' y2='75%' style='{2}'></line> \
+                            <line x1='75%' y1='75%' x2='75%' y2='70%' style='{2}'></line> \
+                            <line x1='75%' y1='75%' x2='70%' y2='75%' style='{2}'></line> \
+                        </svg>"
+                        , svgCss, rectCss, lineCss)
+                    );
                 }
                 /** 关闭之后 */
                 onClosed(): void {
