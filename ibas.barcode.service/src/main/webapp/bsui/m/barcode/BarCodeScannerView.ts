@@ -25,23 +25,28 @@ namespace barcode {
                     let height: number = $("#video").height() / 4;
                     let svgCss: string = "position:absolute;top:0;left:0;bottom:0;right:0;";
                     let rectCss: string = "fill:black;fill-opacity:0.6;";
-                    let lineCss: string = "stroke:red;stroke-width:3;";
+                    let lineCss: string = "stroke:#30e630;stroke-width:3;";
+                    let animateLineCss: string = "stroke:#30e630;stroke-width:2;fill-opacity:0.6;";
                     $("#bar_code_scanner").append(ibas.strings.format(
                         "<svg width='100%' height='100%' version='1.1' xmlns='http://www.w3.org/2000/svg' style='{0}'> \
                             <rect x='0' y='0' width='100%' height='25%' style='{1}'></rect> \
-                            <rect x='0' y='25%' width='calc(50% - {3}px)' height='50%' style='{1}'></rect> \
-                            <rect x='calc(50% + {3}px)' y='25%' width='calc(50% - {3}px)' height='50%' style='{1}'></rect> \
+                            <rect x='0' y='25%' width='calc(50% - {4}px)' height='50%' style='{1}'></rect> \
+                            <rect x='calc(50% + {4}px)' y='25%' width='calc(50% - {4}px)' height='50%' style='{1}'></rect> \
                             <rect x='0' y='75%' width='100%' height='25%' style='{1}'></rect> \
-                            <line x1='calc(50% - {3}px)' y1='25%' x2='calc(50% - {3}px)' y2='30%' style='{2}'></line> \
-                            <line x1='calc(50% - {3}px)' y1='25%' x2='calc(55% - {3}px)' y2='25%' style='{2}'></line> \
-                            <line x1='calc(50% + {3}px)' y1='25%' x2='calc(50% + {3}px)' y2='30%' style='{2}'></line> \
-                            <line x1='calc(50% + {3}px)' y1='25%' x2='calc(45% + {3}px)' y2='25%' style='{2}'></line> \
-                            <line x1='calc(50% - {3}px)' y1='75%' x2='calc(50% - {3}px)' y2='70%' style='{2}'></line> \
-                            <line x1='calc(50% - {3}px)' y1='75%' x2='calc(55% - {3}px)' y2='75%' style='{2}'></line> \
-                            <line x1='calc(50% + {3}px)' y1='75%' x2='calc(50% + {3}px)' y2='70%' style='{2}'></line> \
-                            <line x1='calc(50% + {3}px)' y1='75%' x2='calc(45% + {3}px)' y2='75%' style='{2}'></line> \
+                            <line x1='calc(50% - {4}px)' y1='25%' x2='calc(50% - {4}px)' y2='30%' style='{2}'></line> \
+                            <line x1='calc(50% - {4}px)' y1='25%' x2='calc(55% - {4}px)' y2='25%' style='{2}'></line> \
+                            <line x1='calc(50% + {4}px)' y1='25%' x2='calc(50% + {4}px)' y2='30%' style='{2}'></line> \
+                            <line x1='calc(50% + {4}px)' y1='25%' x2='calc(45% + {4}px)' y2='25%' style='{2}'></line> \
+                            <line x1='calc(50% - {4}px)' y1='75%' x2='calc(50% - {4}px)' y2='70%' style='{2}'></line> \
+                            <line x1='calc(50% - {4}px)' y1='75%' x2='calc(55% - {4}px)' y2='75%' style='{2}'></line> \
+                            <line x1='calc(50% + {4}px)' y1='75%' x2='calc(50% + {4}px)' y2='70%' style='{2}'></line> \
+                            <line x1='calc(50% + {4}px)' y1='75%' x2='calc(45% + {4}px)' y2='75%' style='{2}'></line> \
+                            <line x1='calc(52% - {4}px)' y1='25%' x2='calc(48% + {4}px)' y2='25%' style='{3}'> \
+                                <animate attributeName='y1' from='25%' to='75%' dur='3s' repeatCount='indefinite' /> \
+                                <animate attributeName='y2' from='25%' to='75%' dur='3s' repeatCount='indefinite' /> \
+                            </line> \
                         </svg>"
-                        , svgCss, rectCss, lineCss, height)
+                        , svgCss, rectCss, lineCss, animateLineCss, height)
                     );
                 }
             }
