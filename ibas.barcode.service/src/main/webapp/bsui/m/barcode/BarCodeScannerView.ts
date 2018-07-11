@@ -25,7 +25,7 @@ namespace barcode {
                     let height: number = $("#video").height() / 4;
                     let svgCss: string = "position:absolute;top:0;left:0;bottom:0;right:0;";
                     let rectCss: string = "fill:black;fill-opacity:0.6;";
-                    let lineCss: string = "stroke:#30e630;stroke-width:3;";
+                    let lineCss: string = "stroke:#30e630;stroke-width:3;stroke-linecap:round;";
                     let animateLineCss: string = "stroke:#30e630;stroke-width:2;fill-opacity:0.6;";
                     $("#bar_code_scanner").append(ibas.strings.format(
                         "<svg width='100%' height='100%' version='1.1' xmlns='http://www.w3.org/2000/svg' style='{0}'> \
