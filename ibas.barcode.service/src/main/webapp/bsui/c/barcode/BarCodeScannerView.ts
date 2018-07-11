@@ -17,10 +17,15 @@ namespace barcode {
                 /** 绘制工具条视图 */
                 drawBar(): any {
                     let that: this = this;
+                    // 使用此模块库加载器
+                    let require: Require = ibas.requires.create({
+                        context: ibas.requires.naming(CONSOLE_NAME),
+                    });
+                    let imageUrl: string = require.toUrl("resources/images/scan.svg");
                     // 不重复创建工具条钮
                     if (ibas.objects.isNull(this.bar)) {
                         this.bar = new sap.m.Button("", {
-                            icon: "sap-icon://sort-descending",
+                            icon: imageUrl,
                             tooltip: this.title,
                             type: sap.m.ButtonType.Transparent,
                             press: function (): void {
@@ -205,7 +210,7 @@ namespace barcode {
                     });
                     let svgCss: string = "position:absolute;top:0;left:0;bottom:0;right:0;";
                     let rectCss: string = "fill:black;fill-opacity:0.6;";
-                    let lineCss: string = "stroke:#30e630;stroke-width:3;";
+                    let lineCss: string = "stroke:#30e630;stroke-width:3;stroke-linecap:round;";
                     let animateLineCss: string = "stroke:#30e630;stroke-width:2;fill-opacity:0.6;";
                     $("#bar_code_scanner").append(ibas.strings.format(
                         "<svg width='100%' height='100%' version='1.1' xmlns='http://www.w3.org/2000/svg' style='{0}'> \
@@ -229,8 +234,8 @@ namespace barcode {
                         , svgCss, rectCss, lineCss, animateLineCss)
                     );
                 }
-                /** 关闭之后 */
-                onClosed(): void {
+                /** 复位 */
+                reset(): void {
                     if (!ibas.objects.isNull(this.codeReader)) {
                         this.codeReader.reset();
                     }

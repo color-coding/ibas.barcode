@@ -36,12 +36,24 @@ namespace barcode {
                     proxy: new BarCodeScannerServiceProxy({
                         scanType: emBarCodeType.ALL
                     }),
-                    onCompleted(result: IScanResult): void {
+                    onCompleted(scanResult: IScanResult): void {
+                        let eventType: string = ibas.enums.toString(ibas.emBrowserEventType, ibas.emBrowserEventType.SCAN).toLowerCase();
+                        let scanEvent: CustomEvent = new CustomEvent(eventType, {
+                            detail: scanResult,
+                        });
+                        // 此处触发自定义事件-扫码
+                        // 在监听事件中判断scanEvent.cancelBubble,为真代表其他监听事件已处理过扫码结果
+                        // 通过scanEvent.detail.text修改扫码结果
+                        // 通过scanEvent.cancelBubble通知其他监听事件,扫码结果已被处理
+                        ibas.browserEventManager.fireEvent(ibas.emBrowserEventType.SCAN, scanEvent);
+                        let result: IScanResult = scanEvent.detail;
                         if (result.cancelled) {
                             // 用户取消扫码,不处理
                         } else {
                             if (ibas.objects.isNull(result.error)) {
-                                that.proceeding("scan code:" + result.text);
+                                let text: string = result.text;
+                                text = text.indexOf("#") > -1 ? text.substring(text.indexOf("#")) : text;
+                                ibas.urls.changeHash(text);
                             } else {
                                 that.proceeding(ibas.emMessageType.ERROR, "scan code Error:" + result.error.message);
                             }

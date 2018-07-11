@@ -52,6 +52,11 @@ namespace barcode {
                 // 视图加载完成
                 this.view.showScanner(this.scanType);
             }
+            /** 关闭视图 */
+            close(): void {
+                this.view.reset();
+                super.close();
+            }
             private scan(result: IScanResult): void {
                 this.fireCompleted(result);
             }
@@ -62,6 +67,8 @@ namespace barcode {
             scanEvent: Function;
             // 显示屏幕
             showScanner(type: emBarCodeType): void;
+            // 复位
+            reset(): void;
         }
         /** 条码/二维码扫描服务 */
         export class BarCodeScannerServiceMapping extends ibas.ServiceMapping {
