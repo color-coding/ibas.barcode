@@ -1,14 +1,1 @@
-<svg width="100" height="100" viewBox="-25 -25 150 150" version="1.1" xmlns="http://www.w3.org/2000/svg" style="">
-	<line x1="0" y1="0" x2="0" y2="30" style="stroke:#cae4fb;stroke-width:8;stroke-linecap:round;"></line>
-	<line x1="0" y1="0" x2="30" y2="0" style="stroke:#cae4fb;stroke-width:8;stroke-linecap:round;"></line>
-	<line x1="100" y1="0" x2="70" y2="0" style="stroke:#cae4fb;stroke-width:8;stroke-linecap:round;"></line>
-	<line x1="100" y1="0" x2="100" y2="30" style="stroke:#cae4fb;stroke-width:8;stroke-linecap:round;"></line>
-	<line x1="0" y1="100" x2="0" y2="70" style="stroke:#cae4fb;stroke-width:8;stroke-linecap:round;"></line>
-	<line x1="0" y1="100" x2="30" y2="100" style="stroke:#cae4fb;stroke-width:8;stroke-linecap:round;"></line>
-	<line x1="100" y1="100" x2="100" y2="70" style="stroke:#cae4fb;stroke-width:8;stroke-linecap:round;"></line>
-	<line x1="100" y1="100" x2="70" y2="100" style="stroke:#cae4fb;stroke-width:8;stroke-linecap:round;"></line>
-	<line x1="10" y1="50" x2="90" y2="50" style="stroke:#cae4fb;stroke-width:8;">
-		<!-- <animate attributeName="y1" from="0" to="100" dur="3s" repeatCount="indefinite"></animate> -->
-		<!-- <animate attributeName="y2" from="0" to="100" dur="3s" repeatCount="indefinite"></animate> -->
-	</line>
-</svg>
+<svg width="200" height="200" viewBox="-128 -128 1280 1280" version="1.1" xmlns="http://www.w3.org/2000/svg"><defs><style type="text/css"></style></defs><path d="M810.666667 213.333333h-128a42.666667 42.666667 0 0 1 0-85.333333h170.666666a42.666667 42.666667 0 0 1 42.666667 42.666667v170.666666a42.666667 42.666667 0 0 1-85.333333 0V213.333333zM213.333333 213.333333v128a42.666667 42.666667 0 1 1-85.333333 0V170.666667a42.666667 42.666667 0 0 1 42.666667-42.666667h170.666666a42.666667 42.666667 0 1 1 0 85.333333H213.333333z m597.333334 597.333334v-128a42.666667 42.666667 0 0 1 85.333333 0v170.666666a42.666667 42.666667 0 0 1-42.666667 42.666667h-170.666666a42.666667 42.666667 0 0 1 0-85.333333h128zM213.333333 810.666667h128a42.666667 42.666667 0 0 1 0 85.333333H170.666667a42.666667 42.666667 0 0 1-42.666667-42.666667v-170.666666a42.666667 42.666667 0 0 1 85.333333 0v128z m85.333334-256a42.666667 42.666667 0 0 1 0-85.333334h426.666666a42.666667 42.666667 0 0 1 0 85.333334H298.666667z" p-id="1552" fill="#cae4fb"></path></svg>
