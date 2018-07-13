@@ -12,15 +12,11 @@ namespace barcode {
     export const CONSOLE_NAME: string = "BarCode";
     /** 模块-版本 */
     export const CONSOLE_VERSION: string = "0.1.0";
-    /** 业务仓库名称 */
-    export const BO_REPOSITORY_BARCODE: string = ibas.strings.format(ibas.MODULE_REPOSITORY_NAME_TEMPLATE, CONSOLE_NAME);
-    /** 配置项-启用扫码结果格式化 */
-    export const CONFIG_ENABLE_SCAN_RESULT_FORMAT: string = "enableScanResultFormat";
-    /** 配置项-启用扫码结果监听 */
-    export const CONFIG_ENABLE_SCAN_RESULT_LISTEN: string = "enableScanResultListen";
     export namespace bo {
+        /** 业务仓库名称 */
+        export const BO_REPOSITORY_BARCODE: string = ibas.strings.format(ibas.MODULE_REPOSITORY_NAME_TEMPLATE, CONSOLE_NAME);
         /** 业务对象编码-扫码结果 */
-        export const BO_CODE_SCANRESULT: string = "${Company}_BC_SCANRESULT";
+        export const BO_CODE_SCANRESULT: string = "SYS_BC_SCANRESULT";
     }
     export namespace app {
         /** 条码类型 */

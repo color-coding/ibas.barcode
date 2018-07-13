@@ -7,6 +7,10 @@
  */
 namespace barcode {
     export namespace app {
+        /** 配置项-启用扫码结果格式化 */
+        const CONFIG_ITEM_ENABLE_SCAN_RESULT_FORMAT: string = "enableScanResultFormat";
+        /** 配置项-启用扫码结果监听 */
+        const CONFIG_ITEM_ENABLE_SCAN_RESULT_LISTEN: string = "enableScanResultListen";
         /** 应用-条码扫描 */
         export class BarCodeScannerApp extends ibas.ResidentApplication<IBarCodeScannerView> {
             /** 应用标识 */
@@ -36,7 +40,7 @@ namespace barcode {
                     proxy: new BarCodeScannerServiceProxy({
                         scanType: emBarCodeType.ALL,
                         // 启用集成任务格式化
-                        needFormat: ibas.config.get(CONFIG_ENABLE_SCAN_RESULT_FORMAT, true)
+                        needFormat: ibas.config.get(CONFIG_ITEM_ENABLE_SCAN_RESULT_FORMAT, true)
                     }),
                     onCompleted(scanResult: IScanFormatResult): void {
                         let result: IScanFormatResult = scanResult;
@@ -45,7 +49,7 @@ namespace barcode {
                         } else {
                             if (ibas.objects.isNull(result.error) && ibas.objects.isNull(result.formatError)) {
                                 // 启用监听
-                                if (ibas.config.get(CONFIG_ENABLE_SCAN_RESULT_LISTEN, true)) {
+                                if (ibas.config.get(CONFIG_ITEM_ENABLE_SCAN_RESULT_LISTEN, true)) {
                                     let eventType: string = ibas.enums.toString(ibas.emBrowserEventType, ibas.emBrowserEventType.SCAN).toLowerCase();
                                     let scanEvent: CustomEvent = new CustomEvent(eventType, {
                                         detail: scanResult,
@@ -60,6 +64,8 @@ namespace barcode {
                                 text = text.indexOf("#") > -1 ? text.substring(text.indexOf("#")) : text;
                                 if (!ibas.strings.isEmpty(text) && text.startsWith("#")) {
                                     ibas.urls.changeHash(text);
+                                } else {
+                                    that.proceeding(ibas.emMessageType.INFORMATION, "scan code:" + result.text);
                                 }
                             } else {
                                 if (!ibas.objects.isNull(result.error)) {

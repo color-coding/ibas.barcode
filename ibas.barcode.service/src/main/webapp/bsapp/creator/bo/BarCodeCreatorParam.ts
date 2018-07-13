@@ -139,7 +139,7 @@ namespace barcode {
                 this.initQRCode();
                 let fileAddress: string = ibas.config.get(
                     ibas.strings.format(ibas.CONFIG_ITEM_TEMPLATE_REMOTE_REPOSITORY_ADDRESS,
-                        BO_REPOSITORY_BARCODE));
+                        bo.BO_REPOSITORY_BARCODE));
                 if (!ibas.objects.isNull(fileAddress)) {
                     fileAddress = ibas.urls.normalize(fileAddress);
                     if (!fileAddress.endsWith("/")) { fileAddress += "/"; }
