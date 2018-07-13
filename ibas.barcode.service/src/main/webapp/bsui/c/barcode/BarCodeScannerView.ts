@@ -21,7 +21,12 @@ namespace barcode {
                     let require: Require = ibas.requires.create({
                         context: ibas.requires.naming(CONSOLE_NAME),
                     });
-                    let imageUrl: string = require.toUrl("resources/images/scan.svg");
+                    let imageUrl: string = "";
+                    if (ibas.config.get(ibas.CONFIG_ITEM_PLANTFORM) === ibas.emPlantform.PHONE) {
+                        imageUrl = require.toUrl("resources/images/scan.m.svg");
+                    } else {
+                        imageUrl = require.toUrl("resources/images/scan.c.svg");
+                    }
                     // 不重复创建工具条钮
                     if (ibas.objects.isNull(this.bar)) {
                         this.bar = new sap.m.Button("", {

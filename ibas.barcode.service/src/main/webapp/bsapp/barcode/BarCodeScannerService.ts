@@ -145,8 +145,9 @@ namespace barcode {
                                                 if (!ibas.objects.isNull(actionResult.formattedText)
                                                     || !ibas.objects.isNull(actionResult.formatError)) {
                                                     fireCompleted.call(that, actionResult);
+                                                } else {
+                                                    runActions(++i);
                                                 }
-                                                runActions(++i);
                                             });
                                     } else {
                                         fireCompleted.call(that, formatResult);
