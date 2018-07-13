@@ -32,30 +32,42 @@ namespace barcode {
             /** 激活完整视图 */
             protected showFullView(): void {
                 let that: this = this;
-                ibas.servicesManager.runApplicationService<IBarCodeScannerContract, IScanResult>({
+                ibas.servicesManager.runApplicationService<IBarCodeScannerContract, IScanFormatResult>({
                     proxy: new BarCodeScannerServiceProxy({
-                        scanType: emBarCodeType.ALL
+                        scanType: emBarCodeType.ALL,
+                        // 启用集成任务格式化
+                        needFormat: ibas.config.get(CONFIG_ENABLE_SCAN_RESULT_FORMAT, true)
                     }),
-                    onCompleted(scanResult: IScanResult): void {
-                        let eventType: string = ibas.enums.toString(ibas.emBrowserEventType, ibas.emBrowserEventType.SCAN).toLowerCase();
-                        let scanEvent: CustomEvent = new CustomEvent(eventType, {
-                            detail: scanResult,
-                        });
-                        // 此处触发自定义事件-扫码
-                        // 在监听事件中判断scanEvent.cancelBubble,为真代表其他监听事件已处理过扫码结果
-                        // 通过scanEvent.detail.text修改扫码结果
-                        // 通过scanEvent.cancelBubble通知其他监听事件,扫码结果已被处理
-                        ibas.browserEventManager.fireEvent(ibas.emBrowserEventType.SCAN, scanEvent);
-                        let result: IScanResult = scanEvent.detail;
+                    onCompleted(scanResult: IScanFormatResult): void {
+                        let result: IScanFormatResult = scanResult;
                         if (result.cancelled) {
                             // 用户取消扫码,不处理
                         } else {
-                            if (ibas.objects.isNull(result.error)) {
-                                let text: string = result.text;
+                            if (ibas.objects.isNull(result.error) && ibas.objects.isNull(result.formatError)) {
+                                // 启用监听
+                                if (ibas.config.get(CONFIG_ENABLE_SCAN_RESULT_LISTEN, true)) {
+                                    let eventType: string = ibas.enums.toString(ibas.emBrowserEventType, ibas.emBrowserEventType.SCAN).toLowerCase();
+                                    let scanEvent: CustomEvent = new CustomEvent(eventType, {
+                                        detail: scanResult,
+                                    });
+                                    // 此处触发自定义事件-扫码
+                                    // 在监听事件中判断scanEvent.detail.formattedText,存在值已处理过扫码结果
+                                    // 通过scanEvent.detail.formattedText返回格式化结果
+                                    ibas.browserEventManager.fireEvent(ibas.emBrowserEventType.SCAN, scanEvent);
+                                    result = scanEvent.detail;
+                                }
+                                let text: string = ibas.objects.isNull(result.formattedText) ? result.text : result.formattedText;
                                 text = text.indexOf("#") > -1 ? text.substring(text.indexOf("#")) : text;
-                                ibas.urls.changeHash(text);
+                                if (!ibas.strings.isEmpty(text) && text.startsWith("#")) {
+                                    ibas.urls.changeHash(text);
+                                }
                             } else {
-                                that.proceeding(ibas.emMessageType.ERROR, "scan code Error:" + result.error.message);
+                                if (!ibas.objects.isNull(result.error)) {
+                                    that.proceeding(ibas.emMessageType.ERROR, "scan code Error:" + result.error.message);
+                                }
+                                if (!ibas.objects.isNull(result.formatError)) {
+                                    that.proceeding(ibas.emMessageType.WARNING, "scan code formatError:" + result.formatError.message);
+                                }
                             }
                         }
                     }

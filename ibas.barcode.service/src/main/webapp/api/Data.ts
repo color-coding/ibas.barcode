@@ -14,7 +14,13 @@ namespace barcode {
     export const CONSOLE_VERSION: string = "0.1.0";
     /** 业务仓库名称 */
     export const BO_REPOSITORY_BARCODE: string = ibas.strings.format(ibas.MODULE_REPOSITORY_NAME_TEMPLATE, CONSOLE_NAME);
+    /** 配置项-启用扫码结果格式化 */
+    export const CONFIG_ENABLE_SCAN_RESULT_FORMAT: string = "enableScanResultFormat";
+    /** 配置项-启用扫码结果监听 */
+    export const CONFIG_ENABLE_SCAN_RESULT_LISTEN: string = "enableScanResultListen";
     export namespace bo {
+        /** 业务对象编码-扫码结果 */
+        export const BO_CODE_SCANRESULT: string = "${Company}_BC_SCANRESULT";
     }
     export namespace app {
         /** 条码类型 */
@@ -45,6 +51,13 @@ namespace barcode {
             /** 错误 */
             error?: Error;
         }
+        /** 扫描结果-结果已格式化 */
+        export interface IScanFormatResult extends IScanResult {
+            /** 格式化后的文本 */
+            formattedText?: string;
+            /** 格式化时出现的错误 */
+            formatError?: Error;
+        }
         /** 条码/二维码扫描方式 */
         export abstract class ScanMethod extends ibas.Element {
             /** 启用 */
@@ -56,6 +69,8 @@ namespace barcode {
         export interface IBarCodeScannerContract extends ibas.IServiceContract {
             /** 扫码类型 */
             scanType?: emBarCodeType;
+            /** 是否格式化扫码结果 */
+            needFormat?: boolean;
         }
         /** 条码/二维码扫描服务代理 */
         export class BarCodeScannerServiceProxy extends ibas.ServiceProxy<IBarCodeScannerContract> {
