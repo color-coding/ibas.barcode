@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE BOInformation>
+<ns:BOInformation xmlns:ns="http://colorcoding.org/ibas/initialfantasy/bo">
+    <Code>AVA_BC_SCANRESULT</Code>
+    <Name>ScanResult</Name>
+    <Description>扫码结果</Description>
+</ns:BOInformation>
