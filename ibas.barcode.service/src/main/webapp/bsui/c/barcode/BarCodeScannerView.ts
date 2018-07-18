@@ -31,6 +31,7 @@ namespace barcode {
                     if (ibas.objects.isNull(this.bar)) {
                         this.bar = new sap.m.Button("", {
                             icon: imageUrl,
+                            iconDensityAware: false,
                             tooltip: this.title,
                             type: sap.m.ButtonType.Transparent,
                             press: function (): void {
