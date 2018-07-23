@@ -7,10 +7,14 @@
  */
 namespace barcode {
     export namespace app {
+        export const BARCODE_SCAN_COMMON: string = "BS_COMMON";
         /** 条码扫描-APP */
         export class ScanMethodApp extends ScanMethod {
             constructor() {
                 super();
+                this.id = "e4fa69a3-e9f1-4e3e-863c-7c7a756b8428";
+                this.name = BARCODE_SCAN_COMMON;
+                this.description = ibas.i18n.prop(this.name.toLowerCase());
                 this.enabled = this.validate();
             }
             private validate(): boolean {

@@ -8,11 +8,15 @@
 namespace barcode {
     /** 配置项目-微信公众平台应用编码 */
     export const CONFIG_ITEM_WECHAT_MP_APP_CODE: string = "wechatMPApp";
+    export const BARCODE_SCAN_WECHAT: string = "BS_WECHAT";
     export namespace app {
         /** 条码扫描-微信 */
         export class ScanMethodWechat extends ScanMethod {
             constructor() {
                 super();
+                this.id = "5fc1462c-f7b4-4422-a191-a709e0d2633a";
+                this.name = BARCODE_SCAN_WECHAT;
+                this.description = ibas.i18n.prop(this.name.toLowerCase());
                 this.enabled = this.validate();
             }
             private validate(): boolean {
