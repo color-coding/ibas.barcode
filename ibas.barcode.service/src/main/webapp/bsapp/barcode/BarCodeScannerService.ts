@@ -132,7 +132,7 @@ namespace barcode {
                                     throw new Error(opRslt.message);
                                 }
                                 if (opRslt.resultObjects.length === 0) {
-                                    throw new Error(ibas.i18n.prop("barcode__not_found_job_actions", job.jobName));
+                                    throw new Error(ibas.i18n.prop("barcode_not_found_job_actions", job.name));
                                 }
                                 // 补充根地址
                                 for (let item of opRslt.resultObjects) {
@@ -161,7 +161,7 @@ namespace barcode {
                         }
                     });
                 } else {
-                    formatResult.formatError = new Error(ibas.i18n.prop("barcode__not_found_job_actions", job.jobName));
+                    formatResult.formatError = new Error(ibas.i18n.prop("barcode_not_found_job_actions", job.name));
                     super.fireCompleted(formatResult);
                 }
             }
