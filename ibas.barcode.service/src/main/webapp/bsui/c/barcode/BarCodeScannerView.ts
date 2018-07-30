@@ -22,10 +22,11 @@ namespace barcode {
                         context: ibas.requires.naming(CONSOLE_NAME),
                     });
                     let imageUrl: string = "";
-                    if (ibas.config.get(ibas.CONFIG_ITEM_PLANTFORM) === ibas.emPlantform.PHONE) {
-                        imageUrl = require.toUrl("resources/images/scan.m.svg");
-                    } else {
+                    if (ibas.config.get(ibas.CONFIG_ITEM_PLANTFORM) !== ibas.emPlantform.PHONE
+                        && ibas.config.get(openui5.CONFIG_ITEM_COMPACT_SCREEN, false)) {
                         imageUrl = require.toUrl("resources/images/scan.c.svg");
+                    } else {
+                        imageUrl = require.toUrl("resources/images/scan.m.svg");
                     }
                     // 不重复创建工具条钮
                     if (ibas.objects.isNull(this.bar)) {
@@ -188,7 +189,12 @@ namespace barcode {
                         .then((videoInputDevices) => {
                             if (!!videoInputDevices && videoInputDevices.length > 0) {
                                 // 默认使用最后一个摄像头,后续改为可以切换
-                                firstDeviceId = videoInputDevices[videoInputDevices.length - 1].deviceId;
+                                if (sap.ui.Device.system.tablet) {
+                                    // 平板的第一个摄像头为后置摄像头
+                                    firstDeviceId = videoInputDevices[0].deviceId;
+                                } else {
+                                    firstDeviceId = videoInputDevices[videoInputDevices.length - 1].deviceId;
+                                }
                                 that.codeReader.decodeFromInputVideoDevice(firstDeviceId, "video")
                                     .then((result) => {
                                         that.fireViewEvents(that.scanEvent, {
