@@ -1,9 +1,0 @@
-[
-  {
-    "Id": "41218cef-18b4-4399-ab3c-7ba37bf34b5c",
-    "Name": "BarCode",
-    "Category": "",
-    "Address": ".../",
-    "Repository": "http://localhost:8080/barcode/services/rest/data"
-  }
-]
