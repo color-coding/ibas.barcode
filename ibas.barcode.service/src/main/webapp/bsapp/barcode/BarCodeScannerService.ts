@@ -112,20 +112,13 @@ namespace barcode {
             }
             /** 运行集成任务-集成任务配置扫码结果格式化规则 */
             protected runIntegrationJob(job: integration.bo.IIntegrationJob, formatResult: IScanFormatResult): void {
-                let criteria: ibas.ICriteria = new ibas.Criteria();
-                for (let item of job.integrationJobActions) {
-                    let condition: ibas.ICondition = criteria.conditions.create();
-                    condition.alias = integration.bo.CRITERIA_CONDITION_ALIAS_ACTION_ID;
-                    condition.value = item.actionId;
-                    condition.relationship = ibas.emConditionRelationship.OR;// 其他无意义
-                }
-                if (criteria.conditions.length > 0) {
+                if (job.integrationJobActions.length > 0) {
                     let that: this = this;
                     let fireCompleted: Function = super.fireCompleted;
                     let boRepository: integration.bo.IBORepositoryIntegration =
                         ibas.boFactory.create<integration.bo.IBORepositoryIntegration>(integration.bo.BO_REPOSITORY_INTEGRATION);
                     boRepository.fetchAction({
-                        criteria: criteria,
+                        criteria: job,
                         onCompleted(opRslt: ibas.IOperationResult<integration.bo.IAction>): void {
                             try {
                                 if (opRslt.resultCode !== 0) {
@@ -133,10 +126,6 @@ namespace barcode {
                                 }
                                 if (opRslt.resultObjects.length === 0) {
                                     throw new Error(ibas.i18n.prop("barcode_not_found_job_actions", job.name));
-                                }
-                                // 补充根地址
-                                for (let item of opRslt.resultObjects) {
-                                    item.group = boRepository.toPackageUrl(item);
                                 }
                                 let runActions: Function = function (i: number, extraData: IScanFormatResult): void {
                                     if (i < opRslt.resultObjects.length) {
