@@ -31,23 +31,12 @@ namespace barcode {
                         if (result.cancelled) {
                             // 用户取消扫码,不处理
                         } else {
-                            let moduleConsole: ibas.ModuleConsole;
-                            for (let i: number = 0; i < shell.app.consoleManager.modules().length; i++) {
-                                let console: ibas.IModule = shell.app.consoleManager.modules()[i];
-                                if (console instanceof ibas.ModuleConsole) {
-                                    if (console.id === CONSOLE_ID) {
-                                        moduleConsole = console;
-                                    }
-                                }
-                            }
-                            if (!ibas.objects.isNull(moduleConsole)) {
-                                if (ibas.objects.isNull(result.error)) {
-                                    moduleConsole.viewShower.proceeding(null,
-                                        ibas.emMessageType.INFORMATION, "scan code:" + result.text);
-                                } else {
-                                    moduleConsole.viewShower.proceeding(null,
-                                        ibas.emMessageType.ERROR, "scan code Error:" + result.error.message);
-                                }
+                            if (ibas.objects.isNull(result.error)) {
+                                that.viewShower.proceeding(null,
+                                    ibas.emMessageType.INFORMATION, "scan code:" + result.text);
+                            } else {
+                                that.viewShower.proceeding(null,
+                                    ibas.emMessageType.ERROR, "scan code Error:" + result.error.message);
                             }
                         }
                     }
