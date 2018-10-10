@@ -18,7 +18,7 @@ namespace barcode {
                 this.enabled = this.validate();
             }
             private validate(): boolean {
-                let userAgent: string = navigator.userAgent.toLowerCase();
+                let userAgent: string = window.navigator.userAgent.toLowerCase();
                 if (userAgent.indexOf("x5app") >= 0 || userAgent.indexOf("crosswalk") >= 0) {
                     return true;
                 }
