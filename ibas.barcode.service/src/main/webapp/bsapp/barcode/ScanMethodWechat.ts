@@ -20,7 +20,7 @@ namespace barcode {
                 this.enabled = this.validate();
             }
             private validate(): boolean {
-                let userAgent: string = navigator.userAgent.toLowerCase();
+                let userAgent: string = window.navigator.userAgent.toLowerCase();
                 if (userAgent.indexOf("micromessenger") >= 0) {
                     return true;
                 }
