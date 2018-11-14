@@ -19,8 +19,13 @@ namespace barcode {
                 this.description = ibas.i18n.prop(this.name.toLowerCase());
                 this.enabled = this.validate();
             }
+            private isIOS: boolean;
             private validate(): boolean {
                 let userAgent: string = window.navigator.userAgent.toLowerCase();
+                if (userAgent.indexOf("iphone") >= 0
+                    || userAgent.indexOf("ipad") >= 0) {
+                    this.isIOS = true;
+                }
                 if (userAgent.indexOf("micromessenger") >= 0) {
                     return true;
                 }
@@ -31,6 +36,9 @@ namespace barcode {
                 let boRepository: bo.BORepositoryBarCode = new bo.BORepositoryBarCode();
                 boRepository.fetchWechatSignature({
                     app: app,
+                    // 微信内置浏览器在IOS上的一些问题,https://www.aliyun.com/jiaocheng/376814.html
+                    url: this.isIOS ? ibas.strings.format("{0}{1}?{2}={3}", window.location.origin,
+                        window.location.pathname, ibas.CONFIG_ITEM_USER_TOKEN, ibas.variablesManager.getValue(ibas.VARIABLE_NAME_USER_TOKEN)) : "",
                     onCompleted(opRslt: ibas.IOperationResult<string>): void {
                         try {
                             if (opRslt.resultCode !== 0) {
