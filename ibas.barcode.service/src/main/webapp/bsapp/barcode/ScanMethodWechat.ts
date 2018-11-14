@@ -70,7 +70,14 @@ namespace barcode {
                                                         cancelled: true,
                                                         text: undefined
                                                     });
-                                                }
+                                                },
+                                                fail: function (res: any): void {
+                                                    caller.onCompleted({
+                                                        cancelled: false,
+                                                        text: undefined,
+                                                        error: new Error(res.errMsg)
+                                                    });
+                                                },
                                             });
                                         });
                                         wx.error(function (res: any): void {
