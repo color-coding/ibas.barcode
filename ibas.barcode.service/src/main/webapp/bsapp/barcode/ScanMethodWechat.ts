@@ -25,46 +25,6 @@ namespace barcode {
                 if (userAgent.indexOf("iphone") >= 0
                     || userAgent.indexOf("ipad") >= 0) {
                     this.isIOS = true;
-                    let app: string = ibas.config.get(CONFIG_ITEM_WECHAT_MP_APP_CODE, "TX-WX-01");
-                    let boRepository: bo.BORepositoryBarCode = new bo.BORepositoryBarCode();
-                    boRepository.fetchWechatSignature({
-                        app: app,
-                        // 微信内置浏览器在IOS上的一些问题,https://www.aliyun.com/jiaocheng/376814.html
-                        url: this.isIOS ? ibas.strings.format("{0}{1}?{2}={3}", window.location.origin,
-                            window.location.pathname, ibas.CONFIG_ITEM_USER_TOKEN, ibas.variablesManager.getValue(ibas.VARIABLE_NAME_USER_TOKEN)) : "",
-                        onCompleted(opRslt: ibas.IOperationResult<string>): void {
-                            try {
-                                if (opRslt.resultCode !== 0) {
-                                    throw new Error(opRslt.message);
-                                }
-                                let json: string = opRslt.resultObjects.firstOrDefault();
-                                if (ibas.strings.isEmpty(json)) {
-                                    throw new Error(ibas.i18n.prop(""));
-                                } else {
-                                    let config: any = JSON.parse(json);
-                                    // 使用此模块库加载器
-                                    let require: Require = ibas.requires.create({
-                                        context: ibas.requires.naming(CONSOLE_NAME),
-                                    });
-                                    require(["https://res.wx.qq.com/open/js/jweixin-1.3.0.js",],
-                                        function (wx: any): void {
-                                            wx.config({
-                                                debug: false,
-                                                appId: config.appId,
-                                                timestamp: config.timestamp,
-                                                nonceStr: config.nonceStr,
-                                                signature: config.signature,
-                                                jsApiList: [
-                                                    "scanQRCode"
-                                                ]
-                                            });
-                                        }
-                                    );
-                                }
-                            } catch (error) {
-                            }
-                        }
-                    });
                 }
                 if (userAgent.indexOf("micromessenger") >= 0) {
                     return true;
@@ -95,6 +55,16 @@ namespace barcode {
                                 });
                                 require(["https://res.wx.qq.com/open/js/jweixin-1.3.0.js",],
                                     function (wx: any): void {
+                                        wx.config({
+                                            debug: false,
+                                            appId: config.appId,
+                                            timestamp: config.timestamp,
+                                            nonceStr: config.nonceStr,
+                                            signature: config.signature,
+                                            jsApiList: [
+                                                "scanQRCode"
+                                            ]
+                                        });
                                         wx.ready(function (): void {
                                             wx.scanQRCode({
                                                 needResult: 1,
@@ -126,16 +96,6 @@ namespace barcode {
                                                 text: undefined,
                                                 error: new Error(res.errMsg)
                                             });
-                                        });
-                                        wx.config({
-                                            debug: false,
-                                            appId: config.appId,
-                                            timestamp: config.timestamp,
-                                            nonceStr: config.nonceStr,
-                                            signature: config.signature,
-                                            jsApiList: [
-                                                "scanQRCode"
-                                            ]
                                         });
                                     }
                                 );
