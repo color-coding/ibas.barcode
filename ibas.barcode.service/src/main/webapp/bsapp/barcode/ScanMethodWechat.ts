@@ -8,6 +8,8 @@
 namespace barcode {
     /** 配置项目-微信公众平台应用编码 */
     export const CONFIG_ITEM_WECHAT_MP_APP_CODE: string = "wechatMPApp";
+    /** 配置项目-微信小程序应用编码 */
+    export const CONFIG_ITEM_WECHAT_MINI_PROGRAM_APP_CODE: string = "wechatMiniProgramApp";
     export const BARCODE_SCAN_WECHAT: string = "BS_WECHAT";
     export namespace app {
         /** 条码扫描-微信 */
@@ -21,6 +23,8 @@ namespace barcode {
             }
             /*** ios平台下,微信内置浏览器,仅使用userToken登录时,需要补全url */
             private needFixUrl: boolean;
+            /*** 是否是微信小程序 */
+            private isMiniProgram: boolean;
             private validate(): boolean {
                 let userAgent: string = window.navigator.userAgent.toLowerCase();
                 if (userAgent.indexOf("iphone") >= 0
@@ -32,6 +36,11 @@ namespace barcode {
                         this.needFixUrl = true;
                     }
                 }
+                if (userAgent.indexOf("miniprogram") >= 0
+                    // ios不能通过UA判断浏览器类型
+                    || (<any>window).__wxjs_environment === "miniprogram") {
+                    this.isMiniProgram = true;
+                }
                 if (userAgent.indexOf("micromessenger") >= 0) {
                     return true;
                 }
@@ -39,6 +48,9 @@ namespace barcode {
             }
             scan(caller: IMethodCaller<IScanResult>): void {
                 let app: string = ibas.config.get(CONFIG_ITEM_WECHAT_MP_APP_CODE, "TX-WX-01");
+                if (!!this.isMiniProgram) {
+                    app = ibas.config.get(CONFIG_ITEM_WECHAT_MINI_PROGRAM_APP_CODE, "TX-WX-03");
+                }
                 let boRepository: bo.BORepositoryBarCode = new bo.BORepositoryBarCode();
                 boRepository.fetchWechatSignature({
                     app: app,
