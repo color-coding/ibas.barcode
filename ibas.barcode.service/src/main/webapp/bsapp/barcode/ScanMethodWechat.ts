@@ -40,6 +40,12 @@ namespace barcode {
                     // ios不能通过UA判断浏览器类型
                     || (<any>window).__wxjs_environment === "miniprogram") {
                     this.isMiniProgram = true;
+                    // 所有平台下
+                    if (ibas.config.get(shell.bo.CONFIG_ITEM_CONNECTION_WAY, "")
+                        === shell.bo.CONNECTION_WAY_USER_TOKEN) {
+                        // 使用userToken登录时,需要补全url
+                        this.needFixUrl = true;
+                    }
                 }
                 if (userAgent.indexOf("micromessenger") >= 0) {
                     return true;
@@ -48,9 +54,6 @@ namespace barcode {
             }
             scan(caller: IMethodCaller<IScanResult>): void {
                 let app: string = ibas.config.get(CONFIG_ITEM_WECHAT_MP_APP_CODE, "TX-WX-01");
-                if (!!this.isMiniProgram) {
-                    app = ibas.config.get(CONFIG_ITEM_WECHAT_MINI_PROGRAM_APP_CODE, "TX-WX-03");
-                }
                 let boRepository: bo.BORepositoryBarCode = new bo.BORepositoryBarCode();
                 boRepository.fetchWechatSignature({
                     app: app,
@@ -71,7 +74,7 @@ namespace barcode {
                                 let require: Require = ibas.requires.create({
                                     context: ibas.requires.naming(CONSOLE_NAME),
                                 });
-                                require(["https://res.wx.qq.com/open/js/jweixin-1.3.0.js",],
+                                require(["https://res.wx.qq.com/open/js/jweixin-1.3.2.js",],
                                     function (wx: any): void {
                                         wx.config({
                                             debug: false,
