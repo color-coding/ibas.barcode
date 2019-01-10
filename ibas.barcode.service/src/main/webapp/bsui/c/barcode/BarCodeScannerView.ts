@@ -128,6 +128,7 @@ namespace barcode {
                             type: sap.m.ButtonType.Transparent,
                         }), 0);
                     }
+                    this.id = dialog.getId();
                     return dialog;
                 }
                 codeReader: any;
@@ -250,6 +251,10 @@ namespace barcode {
                 reset(): void {
                     if (!ibas.objects.isNull(this.codeReader)) {
                         this.codeReader.reset();
+                    }
+                    let viewContent: sap.ui.core.Element = sap.ui.getCore().byId(this.id);
+                    if (!ibas.objects.isNull(viewContent)) {
+                        viewContent.destroy(true);
                     }
                 }
             }
