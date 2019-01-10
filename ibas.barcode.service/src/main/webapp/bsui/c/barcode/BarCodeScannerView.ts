@@ -11,7 +11,7 @@ namespace barcode {
             /**
              * 视图-条码扫描
              */
-            export class BarCodeScannerView extends ibas.BOResidentView implements app.IBarCodeScannerView {
+            export class BarCodeScannerView extends ibas.ResidentView implements app.IBarCodeScannerView {
                 // 扫描
                 scanEvent: Function;
                 /** 绘制工具条视图 */
@@ -28,21 +28,16 @@ namespace barcode {
                     } else {
                         imageUrl = require.toUrl("resources/images/scan.m.svg");
                     }
-                    // 不重复创建工具条钮
-                    if (ibas.objects.isNull(this.bar)) {
-                        this.bar = new sap.m.Button("", {
-                            icon: imageUrl,
-                            iconDensityAware: false,
-                            tooltip: this.title,
-                            type: sap.m.ButtonType.Transparent,
-                            press: function (): void {
-                                that.fireViewEvents(that.showFullViewEvent);
-                            }
-                        });
-                    }
-                    return this.bar;
+                    return new sap.m.Button("", {
+                        icon: imageUrl,
+                        iconDensityAware: false,
+                        tooltip: this.title,
+                        type: sap.m.ButtonType.Transparent,
+                        press: function (): void {
+                            that.fireViewEvents(that.showFullViewEvent);
+                        }
+                    });
                 }
-                private bar: sap.m.Button;
                 /** 绘制视图 */
                 draw(): any {
                     let that: this = this;
@@ -128,6 +123,7 @@ namespace barcode {
                             type: sap.m.ButtonType.Transparent,
                         }), 0);
                     }
+                    this.id = dialog.getId();
                     return dialog;
                 }
                 codeReader: any;
@@ -250,6 +246,10 @@ namespace barcode {
                 reset(): void {
                     if (!ibas.objects.isNull(this.codeReader)) {
                         this.codeReader.reset();
+                    }
+                    let viewContent: sap.ui.core.Element = sap.ui.getCore().byId(this.id);
+                    if (!ibas.objects.isNull(viewContent)) {
+                        viewContent.destroy(true);
                     }
                 }
             }
