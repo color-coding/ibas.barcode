@@ -11,7 +11,7 @@ namespace barcode {
             /**
              * 视图-条码扫描
              */
-            export class BarCodeScannerView extends ibas.BOResidentView implements app.IBarCodeScannerView {
+            export class BarCodeScannerView extends ibas.ResidentView implements app.IBarCodeScannerView {
                 // 扫描
                 scanEvent: Function;
                 /** 绘制工具条视图 */
