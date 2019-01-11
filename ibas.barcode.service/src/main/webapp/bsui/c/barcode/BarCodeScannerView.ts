@@ -72,8 +72,8 @@ namespace barcode {
                     });
                     // sap.m.Dialog的buttons属性中只能添加Button,这里重写其校验方法
                     // sap.ui.unified.FileUploader上传控件仅显示按钮时也可添加
-                    let validateAggregation: Function = dialog.validateAggregation;
-                    dialog.validateAggregation = function (sAggregationName: string, oObject: sap.ui.base.ManagedObject | any, bMultiple: boolean): any {
+                    let validateAggregation: Function = (<any>dialog).validateAggregation;
+                    (<any>dialog).validateAggregation = function (sAggregationName: string, oObject: sap.ui.base.ManagedObject | any, bMultiple: boolean): any {
                         if (sAggregationName === "buttons" && oObject instanceof sap.ui.unified.FileUploader) {
                             // 仅显示按钮
                             if (oObject.getButtonOnly()) {
