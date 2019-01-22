@@ -57,6 +57,112 @@ declare namespace integration {
         class IntegrationJobServiceProxy extends ibas.ServiceProxy<IIntegrationJobServiceContract> {
         }
     }
+    namespace action {
+        /** 配置项-动作组 */
+        const CONFIG_ACTION_GROUP: string;
+        /** 类型 */
+        enum emSourceTarget {
+            SOURCE = 0,
+            TARGET = 1
+        }
+        /** 返回配置项 */
+        function CONFIG_KEY(type: emSourceTarget, vaule: string): string;
+        /** 配置项-目标用户 */
+        const CONFIG_USER_TARGET: string;
+        /** 配置项-目标用户密码 */
+        const CONFIG_PASSWORD_TARGET: string;
+        /** 配置项-目标地址 */
+        const CONFIG_ADDRESS_TARGET: string;
+        /**
+         * 集成动作
+         */
+        abstract class IntegrationAction extends ibas.Action {
+            /**
+             * 获取配置
+             * @param key 配置项
+             */
+            getConfig(key: string): any;
+            /**
+             * 获取配置
+             * 启动乐观模式时：以“|”字符递减取值，最终未找到返回undefined
+             * @param key 配置项
+             * @param optimistic 乐观模式（仅key存在“|”时有效）
+             */
+            getConfig(key: string, optimistic: boolean): any;
+            /**
+             * 获取配置
+             * @param key 配置项
+             * @param defalut 默认值
+             */
+            getConfig<T>(key: string, defalut: T): T;
+            /**
+             * 添加配置
+             * @param key 配置项
+             * @param value 值
+             */
+            addConfig(key: string, value: any): void;
+            /**
+             * 复制配置
+             * @param action 来源
+             */
+            addConfig(action: IntegrationAction): void;
+            /**
+             * 复制配置
+             * @param action 来源
+             * @param cover 是否覆盖
+             */
+            addConfig(action: IntegrationAction, cover: boolean): void;
+            /** 设置日志记录者 */
+            setLogger(logger: ibas.ILogger): void;
+            /** 设置日志记录者 */
+            setLogger(action: IntegrationAction): void;
+            /** 运行 */
+            protected run(): boolean;
+            /** 调用后台服务 */
+            protected goAction(name: string, params: {
+                key: string;
+                value: any;
+            }[] | {
+                key: string;
+                value: any;
+            }, fnBack?: (opRslt: ibas.IOperationMessage) => void): void;
+            /** 资源文件（可重载） */
+            protected resources(): string[] | string;
+            /** 运行（需要实现） */
+            protected abstract execute(): boolean | void;
+        }
+        /**
+         * 获取仓库名称（去除Async结尾）
+         * @param boRepository 业务仓库实例或名称
+         */
+        function repositoryName(boRepository: ibas.BORepositoryApplication | string): string;
+        /**
+         * 根据集成动作配置改变业务仓库信息
+         * @param boRepository 业务仓库
+         * @param action 集成动作
+         * @param type 类型
+         */
+        function changeRepositoryInfo(boRepository: ibas.BORepositoryApplication, action: IntegrationAction, type?: emSourceTarget): void;
+        /**
+         * 连接业务仓库
+         * @param user 用户
+         * @param password 密码
+         * @param onCompleted 完成
+         */
+        function connectRepository(user: string, password: string, onCompleted: (opRslt: ibas.IOperationResult<shell.bo.IUser>) => void): void;
+        /**
+         * 连接业务仓库（token写入集成动作配置）
+         * @param action 集成动作
+         * @param type 类型
+         */
+        function connectRepository(action: IntegrationAction, onCompleted: (opRslt: ibas.IOperationResult<shell.bo.IUser>) => void): void;
+        /**
+         * 补全业务仓库地址（根据address配置，仅适用Target系统）
+         * @param action 集成动作
+         * @param boRepository 业务仓库实例或名称
+         */
+        function completeAddress(action: IntegrationAction, boRepository: ibas.BORepositoryApplication | string): string;
+    }
 }
 /**
  * @license
@@ -281,6 +387,11 @@ declare namespace integration {
              * 获取动作地址
              */
             toPackageUrl(action: bo.IAction): string;
+            /**
+             * 调用后台动作
+             * @param caller 调用者
+             */
+            goAction(caller: IActionGoer): void;
         }
         /**
          * 集成动作查询者
@@ -288,6 +399,15 @@ declare namespace integration {
         interface IActionFetcher extends ibas.IMethodCaller<bo.IAction> {
             /** 查询条件 */
             criteria: ibas.ICriteria | ibas.ICondition[] | bo.IIntegrationJob | bo.IIntegrationJobAction | bo.IIntegrationJobAction[];
+        }
+        /** 后台动作调用者 */
+        interface IActionGoer extends ibas.IMethodCaller<any> {
+            /** 组 */
+            group: string;
+            /** 名称 */
+            name: string;
+            /** 参数 */
+            parameters: ibas.KeyValue[];
         }
     }
 }
@@ -776,6 +896,11 @@ declare namespace integration {
              * @param caller 调用者
              */
             downloadCode(caller: ICodeDownloader<Blob>): void;
+            /**
+             * 调用后台动作
+             * @param caller 调用者
+             */
+            goAction(caller: IActionGoer): void;
         }
         /** 代码下载者 */
         interface ICodeDownloader<T> extends ibas.IMethodCaller<T> {

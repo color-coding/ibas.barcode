@@ -10,14 +10,14 @@ namespace barcode {
         /** 扫描方法 */
         export function scanMethods(): ibas.IList<ScanMethod> {
             let methods: ibas.IList<ScanMethod> = new ibas.ArrayList<ScanMethod>();
-            for (let module of shell.app.consoleManager.modules()) {
+            shell.app.modules.forEach((module) => {
                 for (let element of module.elements()) {
                     if (!(ibas.objects.instanceOf(element, ScanMethod))) {
                         continue;
                     }
                     methods.add(<ScanMethod>element);
                 }
-            }
+            });
             return methods;
         }
     }
