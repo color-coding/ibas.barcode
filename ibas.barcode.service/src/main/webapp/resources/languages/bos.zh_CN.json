@@ -1,1 +1,7 @@
-[]
+[
+    {
+        "em_barcodetype_all": "所有",
+        "em_barcodetype_bar_code": "条形码",
+        "em_barcodetype_qr_code": "二维码"
+    }
+]

@@ -25,8 +25,6 @@
   "barcode_msg_copysuccess": "复制成功",
   "barcode_unrealized_method": "该方法暂未实现",
   "barcode_msg_level_must_be_h_when_has_logo": "有logo图片的时候,纠错级别必须为H",
-  "em_bar_code": "条形码",
-  "em_qr_code": "二维码",
   "bs_common": "条码扫描",
   "bs_wechat": "条码扫描(微信)",
   "barcode_not_have_privilege_for_integration_module": "用户没有集成模块的权限,无法查找扫码解析规则",

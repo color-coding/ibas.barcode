@@ -1090,7 +1090,7 @@ declare namespace integration {
             protected fetchData(criteria: ibas.ICriteria): void;
             /** 上传程序包 */
             protected uploadActionPackage(formData: FormData): void;
-            protected viewCode(data: bo.Action | bo.Action[]): void;
+            protected viewCode(data: bo.Action): void;
             /** 删除数据，参数：目标数据集合 */
             protected deleteData(data: bo.Action | bo.Action[]): void;
         }
@@ -1265,6 +1265,7 @@ declare namespace integration {
         }
         /** 任务动作 */
         class TaskAction extends ibas.Action {
+            constructor(job?: bo.IntegrationJob);
             /** 工作 */
             job: bo.IntegrationJob;
             /** 上次运行时间 */
@@ -1553,7 +1554,6 @@ declare namespace integration {
         class Console extends ibas.ModuleConsole {
             /** 构造函数 */
             constructor();
-            private _navigation;
             /** 创建视图导航 */
             navigation(): ibas.IViewNavigation;
             /** 初始化 */
@@ -1570,7 +1570,6 @@ declare namespace integration {
         class ConsoleDev extends ibas.ModuleConsole {
             /** 构造函数 */
             constructor();
-            private _navigation;
             /** 创建视图导航 */
             navigation(): ibas.IViewNavigation;
             /** 初始化 */
