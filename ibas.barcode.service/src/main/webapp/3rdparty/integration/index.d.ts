@@ -913,7 +913,7 @@ declare namespace integration {
             beDeleted: string;
         }
         /** 代码下载仓库 */
-        class CodeRepositoryDownloadAjax extends ibas.RemoteRepositoryXhr {
+        class CodeRepositoryDownloadAjax extends ibas.RemoteRepositoryAjax {
             constructor();
             /**
              * 下载文件
@@ -921,7 +921,7 @@ declare namespace integration {
              * @param caller 调用者
              */
             download<T>(method: string, caller: ibas.IMethodCaller<any>): void;
-            protected createHttpRequest(method: string, data: any): XMLHttpRequest;
+            protected createHttpRequest(method: string): XMLHttpRequest;
         }
         /** 业务对象仓库-集成开发 */
         class BORepositoryIntegrationDevelopment extends ibas.BORepositoryApplication {
