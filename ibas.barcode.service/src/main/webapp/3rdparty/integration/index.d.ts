@@ -73,6 +73,8 @@ declare namespace integration {
         const CONFIG_PASSWORD_TARGET: string;
         /** 配置项-目标地址 */
         const CONFIG_ADDRESS_TARGET: string;
+        /** 配置项-重新地址表达式 */
+        const CONFIG_REWRITE_ADDRESS: string;
         /**
          * 集成动作
          */
