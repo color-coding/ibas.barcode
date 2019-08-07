@@ -446,6 +446,8 @@ declare namespace integration {
             activated: boolean;
             /** 配置 */
             configs: ibas.IList<IActionConfig>;
+            /** 依赖库 */
+            dependencies: string[];
             /** 完整路径 */
             fullPath(): string;
         }
