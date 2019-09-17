@@ -58,7 +58,9 @@ namespace barcode {
                 let method: string =
                     ibas.strings.format("fetchWechatSignature?app={0}&url={1}&token={2}",
                         fetcher.app, url, this.token);
-                boRepository.callRemoteMethod(method, undefined, fetcher);
+                boRepository.callRemoteMethod(method, undefined, (opRslt) => {
+                    fetcher.onCompleted.call(ibas.objects.isNull(fetcher.caller) ? fetcher : fetcher.caller, opRslt);
+                });
             }
         }
     }
