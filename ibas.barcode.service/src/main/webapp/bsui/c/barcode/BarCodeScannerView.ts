@@ -41,7 +41,7 @@ namespace barcode {
                 /** 绘制视图 */
                 draw(): any {
                     let that: this = this;
-                    let dialog: sap.m.Dialog = new sap.m.Dialog("", {
+                    let dialog: sap.m.Dialog = new sap.extension.m.Dialog("", {
                         title: this.title,
                         type: sap.m.DialogType.Standard,
                         state: sap.ui.core.ValueState.None,
