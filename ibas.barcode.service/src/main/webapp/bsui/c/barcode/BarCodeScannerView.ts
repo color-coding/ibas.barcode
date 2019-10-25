@@ -138,6 +138,7 @@ namespace barcode {
                     return dialog;
                 }
                 codeReader: any;
+                zxing: any;
                 // 显示屏幕
                 showScanner(type: app.emBarCodeType): void {
                     let that: this = this;
@@ -153,6 +154,7 @@ namespace barcode {
                     });
                     require(libraries,
                         function (zxing: any): void {
+                            that.zxing = zxing;
                             if (ibas.objects.isNull(that.codeReader)) {
                                 if (ibas.objects.isNull(type)) {
                                     type = app.emBarCodeType.ALL;
@@ -169,7 +171,7 @@ namespace barcode {
                                     case app.emBarCodeType.ALL:
                                     default:
                                         // 支持条码/二维码扫描
-                                        that.codeReader = new zxing.BrowserMultiCodeReader();
+                                        that.codeReader = new zxing.BrowserMultiFormatReader();
                                         break;
                                 }
                             }
@@ -202,20 +204,22 @@ namespace barcode {
                                 } else {
                                     firstDeviceId = videoInputDevices[videoInputDevices.length - 1].deviceId;
                                 }
-                                that.codeReader.decodeFromInputVideoDevice(firstDeviceId, "video")
-                                    .then((result) => {
+                                that.codeReader.decodeFromVideoDevice(firstDeviceId, "video", (result, err) => {
+                                    if (!!result) {
                                         that.fireViewEvents(that.scanEvent, {
                                             cancelled: false,
                                             text: result.text
                                         });
-                                    }).catch((err) => {
+                                    }
+                                    if (!!err && !!that.zxing && !(err instanceof that.zxing.NotFoundException)) {
                                         // 解码失败
                                         that.application.viewShower.messages({
                                             type: ibas.emMessageType.ERROR,
                                             title: err.name,
                                             message: err.message,
                                         });
-                                    });
+                                    }
+                                });
                                 that.prettify();
                             } else {
                                 // 没找到摄像头
