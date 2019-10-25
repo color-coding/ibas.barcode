@@ -30,5 +30,6 @@
   "barcode_not_have_privilege_for_integration_module": "用户没有集成模块的权限,无法查找扫码解析规则",
   "barcode_not_found_integrationjob": "没有找到扫码解析规则",
   "barcode_not_found_job_actions": "没有找到扫码解析规则[{0}]的动作",
+  "barcode_not_use_https_protocol": "检测到当前系统未使用https协议,不能启动摄像头",
   "barcode_closing_delimiter": "----结束----"
 }

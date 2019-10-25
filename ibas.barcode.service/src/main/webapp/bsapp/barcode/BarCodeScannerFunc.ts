@@ -28,17 +28,6 @@ namespace barcode {
                         scanType: emBarCodeType.ALL
                     }),
                     onCompleted(result: IScanResult): void {
-                        if (result.cancelled) {
-                            // 用户取消扫码,不处理
-                        } else {
-                            if (ibas.objects.isNull(result.error)) {
-                                that.viewShower.proceeding(null,
-                                    ibas.emMessageType.INFORMATION, "scan code:" + result.text);
-                            } else {
-                                that.viewShower.proceeding(null,
-                                    ibas.emMessageType.ERROR, "scan code Error:" + result.error.message);
-                            }
-                        }
                     }
                 });
                 return null;

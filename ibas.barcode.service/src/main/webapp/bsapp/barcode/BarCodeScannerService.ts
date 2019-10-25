@@ -39,6 +39,12 @@ namespace barcode {
                     } else {
                         this.scanType = contract.scanType;
                     }
+                    if (ibas.objects.isNull(contract.enableLocalFile)) {
+                        // 默认可以从本地上传图片
+                        this.enableLocalFile = true;
+                    } else {
+                        this.enableLocalFile = contract.enableLocalFile;
+                    }
                     this.show();
                 }
             }
@@ -46,16 +52,24 @@ namespace barcode {
             protected registerView(): void {
                 super.registerView();
                 // 其他事件
+                this.view.enableLocalFile = this.enableLocalFile;
                 this.view.scanEvent = this.scan;
             }
             /** 扫码类型 */
             private scanType: emBarCodeType;
             /** 是否格式化扫码结果 */
             private needFormat: boolean;
+            /** 是否可以从本地选择图片 */
+            private enableLocalFile: boolean;
             /** 视图显示后 */
             protected viewShowed(): void {
                 // 视图加载完成
-                this.view.showScanner(this.scanType);
+                if (document.location.protocol !== "https:" && document.location.hostname !== "localhost") {
+                    // 未启用https协议,不能使用摄像头
+                    this.messages(ibas.emMessageType.WARNING, ibas.i18n.prop("barcode_not_use_https_protocol"));
+                } else {
+                    this.view.showScanner(this.scanType);
+                }
             }
             /** 关闭视图 */
             close(): void {
@@ -68,6 +82,22 @@ namespace barcode {
             /** 触发完成事件 */
             protected fireCompleted(result: IScanResult): void {
                 let that: this = this;
+                if (!result.cancelled) {
+                    // 记录扫码结果
+                    if (ibas.objects.isNull(result.error)) {
+                        if (that.viewShower instanceof shell.app.CenterApp) {
+                            that.proceeding(
+                                ibas.emMessageType.INFORMATION, "scan code:" + result.text);
+                        }
+                        ibas.logger.log(ibas.emMessageLevel.INFO, "scan code:" + result.text);
+                    } else {
+                        if (that.viewShower instanceof shell.app.CenterApp) {
+                            that.proceeding(
+                                ibas.emMessageType.ERROR, "scan code Error:" + result.error.message);
+                        }
+                        ibas.logger.log(ibas.emMessageLevel.ERROR, "scan code Error:" + result.error.message);
+                    }
+                }
                 if (!this.needFormat || result.cancelled || !!result.error) {
                     // 不需要格式化扫码结果,直接返回
                     super.fireCompleted(result);
@@ -268,6 +298,8 @@ namespace barcode {
         }
         /** 视图-条码扫描 */
         export interface IBarCodeScannerView extends ibas.IResidentView {
+            /** 是否可以从本地选择图片 */
+            enableLocalFile: boolean;
             // 扫描
             scanEvent: Function;
             // 显示屏幕
