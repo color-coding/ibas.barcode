@@ -67,6 +67,8 @@ namespace barcode {
             scanType?: emBarCodeType;
             /** 是否格式化扫码结果 */
             needFormat?: boolean;
+            /** 是否可以从本地选择图片 */
+            enableLocalFile?: boolean;
         }
         /** 条码/二维码扫描服务代理 */
         export class BarCodeScannerServiceProxy extends ibas.ServiceProxy<IBarCodeScannerContract> {

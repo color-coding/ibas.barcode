@@ -12,6 +12,8 @@ namespace barcode {
              * 视图-条码扫描
              */
             export class BarCodeScannerView extends ibas.ResidentView implements app.IBarCodeScannerView {
+                /** 是否可以从本地选择图片 */
+                enableLocalFile: boolean;
                 // 扫描
                 scanEvent: Function;
                 /** 绘制工具条视图 */
@@ -83,40 +85,49 @@ namespace barcode {
                             return validateAggregation.apply(dialog, arguments);
                         }
                     };
-                    dialog.insertButton(<any>new sap.ui.unified.FileUploader("", {
-                        buttonOnly: true,
-                        buttonText: ibas.i18n.prop("barcode_btn_decodelocalimage"),
-                        multiple: false,
-                        uploadOnChange: false,
-                        style: sap.m.ButtonType.Transparent,
-                        width: "auto",
-                        fileType: ["jpg", "jpeg", "png", "bmp"],
-                        mimeType: ["image/jpeg", "image/png", "image/bmp"],
-                        change: function (oEvent: sap.ui.base.Event): void {
-                            let files: File[] = oEvent.getParameter("files");
-                            if (ibas.objects.isNull(files) || files.length === 0) {
-                                return;
-                            }
-                            let oURL: any = window.URL || (<any>window).webkitURL;
-                            let imageUrl: string = oURL.createObjectURL(files[0]);
-                            if (!ibas.objects.isNull(that.codeReader)) {
-                                that.codeReader.decodeFromImage(undefined, imageUrl)
-                                    .then((result) => {
-                                        that.fireViewEvents(that.scanEvent, {
-                                            cancelled: false,
-                                            text: result.text
+                    if (!!this.enableLocalFile) {
+                        dialog.insertButton(<any>new sap.ui.unified.FileUploader("", {
+                            buttonOnly: true,
+                            buttonText: ibas.i18n.prop("barcode_btn_decodelocalimage"),
+                            multiple: false,
+                            uploadOnChange: false,
+                            style: sap.m.ButtonType.Transparent,
+                            width: "auto",
+                            fileType: ["jpg", "jpeg", "png", "bmp"],
+                            mimeType: ["image/jpeg", "image/png", "image/bmp"],
+                            change: function (oEvent: sap.ui.base.Event): void {
+                                let files: File[] = oEvent.getParameter("files");
+                                if (ibas.objects.isNull(files) || files.length === 0) {
+                                    return;
+                                }
+                                let oURL: any = window.URL || (<any>window).webkitURL;
+                                let imageUrl: string = oURL.createObjectURL(files[0]);
+                                if (!ibas.objects.isNull(that.codeReader)) {
+                                    that.codeReader.decodeFromImage(undefined, imageUrl)
+                                        .then((result) => {
+                                            that.fireViewEvents(that.scanEvent, {
+                                                cancelled: false,
+                                                text: result.text
+                                            });
+                                        }).catch((err) => {
+                                            // 解码失败
+                                            that.application.viewShower.proceeding(that,
+                                                ibas.emMessageType.ERROR,
+                                                ibas.i18n.prop("barcode_msg_notfoundcode"),
+                                            );
+                                            that.decodeFromInputVideoDevice();
                                         });
-                                    }).catch((err) => {
-                                        // 解码失败
-                                        that.application.viewShower.proceeding(that,
-                                            ibas.emMessageType.ERROR,
-                                            ibas.i18n.prop("barcode_msg_notfoundcode"),
-                                        );
-                                        that.decodeFromInputVideoDevice();
-                                    });
-                            }
-                        },
-                    }), 0);
+                                }
+                            },
+                        }), 0);
+                    } else {
+                        if (ibas.config.get(ibas.CONFIG_ITEM_PLANTFORM) === ibas.emPlantform.PHONE) {
+                            // 移动端加个按钮撑一下空间,不然上传控件太靠左了
+                            dialog.insertButton(new sap.m.Button("", {
+                                type: sap.m.ButtonType.Transparent,
+                            }), 0);
+                        }
+                    }
                     if (ibas.config.get(ibas.CONFIG_ITEM_PLANTFORM) === ibas.emPlantform.PHONE) {
                         // 移动端加个按钮撑一下空间,不然上传控件太靠左了
                         dialog.insertButton(new sap.m.Button("", {
@@ -220,6 +231,7 @@ namespace barcode {
                     let rectCss: string = "fill:black;fill-opacity:0.6;";
                     let lineCss: string = "stroke:#30e630;stroke-width:3;stroke-linecap:round;";
                     let animateLineCss: string = "stroke:#30e630;stroke-width:2;fill-opacity:0.6;";
+                    $("#bar_code_scanner svg").remove();
                     $("#bar_code_scanner").append(ibas.strings.format(
                         "<svg width='100%' height='100%' version='1.1' xmlns='http://www.w3.org/2000/svg' style='{0}'> \
                             <rect x='0' y='0' width='100%' height='25%' style='{1}'></rect> \
