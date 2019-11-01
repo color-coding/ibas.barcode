@@ -51,6 +51,11 @@ namespace barcode {
             /** 注册视图 */
             protected registerView(): void {
                 super.registerView();
+                if (!ibas.objects.isNull(this.scanType) && this.scanType !== emBarCodeType.ALL) {
+                    this.view.title = ibas.strings.format("{0}({1})", this.view.title,
+                        ibas.i18n.prop("barcode_support_scan_type", ibas.enums.describe(emBarCodeType, this.scanType))
+                    );
+                }
                 // 其他事件
                 this.view.enableLocalFile = this.enableLocalFile;
                 this.view.scanEvent = this.scan;
