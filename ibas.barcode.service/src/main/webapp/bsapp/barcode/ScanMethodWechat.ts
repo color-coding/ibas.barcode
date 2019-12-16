@@ -79,7 +79,7 @@ namespace barcode {
                                 let require: Require = ibas.requires.create({
                                     context: ibas.requires.naming(CONSOLE_NAME),
                                 });
-                                require(["https://res.wx.qq.com/open/js/jweixin-1.3.2.js",],
+                                require(["https://res.wx.qq.com/open/js/jweixin-1.4.0.js",],
                                     function (wx: any): void {
                                         wx.config({
                                             debug: false,
