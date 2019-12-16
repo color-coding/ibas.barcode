@@ -55,11 +55,16 @@ namespace barcode {
             scan(caller: IMethodCaller<IScanResult>): void {
                 let app: string = ibas.config.get(CONFIG_ITEM_WECHAT_MP_APP_CODE, "TX-WX-01");
                 let boRepository: bo.BORepositoryBarCode = new bo.BORepositoryBarCode();
+                let entryUrl: string = ibas.config.get(shell.app.CONFIG_ITEM_ENTRY_URL, "");
+                let url: string = entryUrl;
+                if (!ibas.strings.isEmpty(entryUrl) && entryUrl.includes("#")) {
+                    // 去除hash
+                    url = entryUrl.substring(0, entryUrl.indexOf("#"));
+                }
                 boRepository.fetchWechatSignature({
                     app: app,
-                    // 微信内置浏览器在IOS上的一些问题,https://www.aliyun.com/jiaocheng/376814.html
-                    url: this.needFixUrl ? ibas.strings.format("{0}{1}?{2}={3}", window.location.origin,
-                        window.location.pathname, ibas.CONFIG_ITEM_USER_TOKEN, ibas.variablesManager.getValue(ibas.VARIABLE_NAME_USER_TOKEN)) : "",
+                    // 微信内置浏览器在IOS上时,只记录登录系统时的url,验证签名时应使用此url即shell.app.CONFIG_ITEM_ENTRY_URL
+                    url: this.needFixUrl ? url : "",
                     onCompleted(opRslt: ibas.IOperationResult<string>): void {
                         try {
                             if (opRslt.resultCode !== 0) {
