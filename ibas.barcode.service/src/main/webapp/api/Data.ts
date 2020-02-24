@@ -16,7 +16,7 @@ namespace barcode {
         /** 业务仓库名称 */
         export const BO_REPOSITORY_BARCODE: string = ibas.strings.format(ibas.MODULE_REPOSITORY_NAME_TEMPLATE, CONSOLE_NAME);
         /** 业务对象编码-扫码结果 */
-        export const BO_CODE_SCANRESULT: string = "SYS_BC_SCANRESULT";
+        export const BO_CODE_SCANRESULT: string = "${Company}_BC_SCANRESULT";
     }
     export namespace app {
         /** 条码类型 */

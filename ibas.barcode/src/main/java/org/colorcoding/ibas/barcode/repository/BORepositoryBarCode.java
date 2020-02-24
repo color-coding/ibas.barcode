@@ -21,6 +21,7 @@ import org.colorcoding.ibas.bobas.message.MessageLevel;
 import org.colorcoding.ibas.bobas.repository.BORepositoryServiceApplication;
 import org.colorcoding.ibas.thirdpartyapp.bo.application.Application;
 import org.colorcoding.ibas.thirdpartyapp.bo.application.IApplication;
+import org.colorcoding.ibas.thirdpartyapp.bo.other.ApplicationSetting;
 import org.colorcoding.ibas.thirdpartyapp.repository.BORepositoryThirdPartyApp;
 
 import com.fasterxml.jackson.databind.JsonNode;
@@ -47,10 +48,8 @@ public class BORepositoryBarCode extends BORepositoryServiceApplication
 	/**
 	 * 获得微信签名,初始化微信JSSDK时使用
 	 *
-	 * @param appCode
-	 *            应用编码
-	 * @param url
-	 *            当前网页的URL，不包含#及其后面部分
+	 * @param appCode 应用编码
+	 * @param url     当前网页的URL，不包含#及其后面部分
 	 */
 	@Override
 	public IOperationResult<String> fetchWechatSignature(String appCode, String url) {
@@ -60,12 +59,9 @@ public class BORepositoryBarCode extends BORepositoryServiceApplication
 	/**
 	 * 获得微信签名,初始化微信JSSDK时使用
 	 *
-	 * @param appCode
-	 *            应用编码
-	 * @param url
-	 *            当前网页的URL，不包含#及其后面部分
-	 * @param token
-	 *            口令
+	 * @param appCode 应用编码
+	 * @param url     当前网页的URL，不包含#及其后面部分
+	 * @param token   口令
 	 */
 	@Override
 	public OperationResult<String> fetchWechatSignature(String appCode, String url, String token) {
@@ -85,7 +81,12 @@ public class BORepositoryBarCode extends BORepositoryServiceApplication
 			if (application == null) {
 				throw new Exception(I18N.prop("msg_tpa_invaild_application", appCode));
 			}
-			JsonNode result = this.generateWechatSignature(application.getAppId(), application.getAppSecret(), url);
+			ApplicationSetting appSetting = boRepository.createApplicationSetting(application);
+			if (appSetting == null) {
+				throw new Exception(I18N.prop("msg_tpa_invaild_application", appCode));
+			}
+			JsonNode result = this.generateWechatSignature(appSetting.paramValue("AppId"),
+					appSetting.paramValue("AppSecret"), url);
 			if (result.get("error") != null) {
 				throw new Exception(this.nodeValue(result, "error"));
 			}
