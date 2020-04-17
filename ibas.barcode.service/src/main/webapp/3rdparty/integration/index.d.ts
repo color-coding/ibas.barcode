@@ -12,6 +12,14 @@ declare namespace integration {
     const CONSOLE_NAME: string;
     /** 模块-版本 */
     const CONSOLE_VERSION: string;
+    namespace config {
+        /**
+         * 获取此模块配置
+         * @param key 配置项
+         * @param defalut 默认值
+         */
+        function get<T>(key: string, defalut?: T): T;
+    }
     namespace bo {
         /** 业务仓库名称 */
         const BO_REPOSITORY_INTEGRATION: string;
@@ -1425,8 +1433,6 @@ declare namespace integration {
             /** 运行,覆盖原方法 */
             run(): void;
             run(data: bo.IntegrationJob): void;
-            /** 待编辑的数据 */
-            protected editData: bo.IntegrationJob;
             /** 待编辑的数据 */
             protected editIntegrationJobAction: bo.IntegrationJobAction;
             /** 保存数据 */
