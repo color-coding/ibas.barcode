@@ -209,6 +209,15 @@ declare namespace integration {
             /** 说明 */
             remark: string;
         }
+        /** 集成-动作 */
+        interface IActionPackage {
+            /** 标识 */
+            id: string;
+            /** 时间 */
+            dateTime: Date;
+            /** 动作 */
+            actions: IAction[];
+        }
     }
 }
 /**
@@ -228,6 +237,8 @@ declare namespace integration {
             activated: ibas.emYesNo;
             /** 频率（秒） */
             frequency: number;
+            /** 运行时间点 */
+            atTime: number;
             /** 关联的业务对象 */
             boCode: string;
             /** 关联的应用 */
@@ -468,6 +479,16 @@ declare namespace integration {
             /** 说明 */
             remark: string;
         }
+        /** 集成-动作 */
+        class ActionPackage implements IActionPackage {
+            constructor();
+            /** 标识 */
+            id: string;
+            /** 时间 */
+            dateTime: Date;
+            /** 动作 */
+            actions: Action[];
+        }
     }
 }
 /**
@@ -503,6 +524,12 @@ declare namespace integration {
             get frequency(): number;
             /** 设置-频率（秒） */
             set frequency(value: number);
+            /** 映射的属性名称-运行时间点 */
+            static PROPERTY_ATTIME_NAME: string;
+            /** 获取-运行时间点 */
+            get atTime(): number;
+            /** 设置-运行时间点 */
+            set atTime(value: number);
             /** 映射的属性名称-关联的业务对象 */
             static PROPERTY_BOCODE_NAME: string;
             /** 获取-关联的业务对象 */
@@ -952,7 +979,12 @@ declare namespace integration {
              * 上传程序包
              * @param caller 调用者
              */
-            uploadActionPackage(caller: ibas.IUploadFileCaller<bo.Action>): void;
+            uploadActionPackage(caller: ibas.IUploadFileCaller<bo.ActionPackage>): void;
+            /**
+             * 查询程序包
+             * @param fetcher 调用者
+             */
+            fetchActionPackage(fetcher: ibas.IFetchCaller<bo.ActionPackage>): void;
             /**
              * 获取动作地址
              */
@@ -1118,6 +1150,7 @@ declare namespace integration {
             protected viewShowed(): void;
             /** 查询数据 */
             protected fetchData(criteria: ibas.ICriteria): void;
+            run(): void;
             /** 新建数据 */
             protected newData(): void;
         }
@@ -1157,25 +1190,27 @@ declare namespace integration {
             /** 视图显示后 */
             protected viewShowed(): void;
             /** 查询数据 */
-            protected fetchData(criteria: ibas.ICriteria): void;
+            protected fetchPackage(criteria: ibas.ICriteria): void;
             /** 上传程序包 */
-            protected uploadActionPackage(formData: FormData): void;
-            protected viewCode(data: bo.Action): void;
+            protected uploadPackage(formData: FormData): void;
             /** 删除数据，参数：目标数据集合 */
-            protected deleteData(data: bo.Action | bo.Action[]): void;
+            protected deletePackage(data: bo.ActionPackage | bo.ActionPackage[]): void;
+            protected viewAction(data: bo.Action): void;
         }
         /** 视图-集成任务 */
-        interface IIntegrationActionListView extends ibas.IBOQueryView {
+        interface IIntegrationActionListView extends ibas.IView {
+            /** 查询包 */
+            fetchPackageEvent: Function;
             /** 上传包 */
-            uploadActionPackageEvent: Function;
+            uploadPackageEvent: Function;
             /** 删除数据事件，参数：删除对象集合 */
-            deleteDataEvent: Function;
-            /** 查看代码 */
-            viewCodeEvent: Function;
-            /** 显示数据 */
-            showData(datas: bo.Action[]): void;
-            /** 显示代码 */
-            showCode(code: Blob): void;
+            deletePackageEvent: Function;
+            /** 显示包 */
+            showPackages(datas: bo.ActionPackage[]): void;
+            /** 查看动作 */
+            viewActionEvent: Function;
+            /** 显示动作 */
+            showAction(action: bo.Action): void;
         }
     }
 }
@@ -1234,6 +1269,16 @@ declare namespace integration {
 declare namespace integration {
     namespace app {
         class IntegrationActionFunc extends ibas.ModuleFunction {
+            /** 功能标识 */
+            static FUNCTION_ID: string;
+            /** 功能名称 */
+            static FUNCTION_NAME: string;
+            /** 构造函数 */
+            constructor();
+            /** 默认功能 */
+            default(): ibas.IApplication<ibas.IView>;
+        }
+        class IntegrationSchedulerFunc extends ibas.ModuleFunction {
             /** 功能标识 */
             static FUNCTION_ID: string;
             /** 功能名称 */
@@ -1305,7 +1350,7 @@ declare namespace integration {
 declare namespace integration {
     namespace app {
         /** 集成任务调度者 */
-        class IntegrationJobSchedulerApp extends ibas.ResidentApplication<IIntegrationJobSchedulerView> {
+        class IntegrationJobSchedulerApp extends ibas.Application<IIntegrationJobSchedulerView> {
             /** 应用标识 */
             static APPLICATION_ID: string;
             /** 应用名称 */
@@ -1317,25 +1362,30 @@ declare namespace integration {
             /** 视图显示后 */
             protected viewShowed(): void;
             /** 工具条显示后 */
-            protected barShowed(): void;
-            private activated;
+            run(): void;
             private jobs;
-            private schedule;
             private reset;
             private suspend;
+            close(): void;
         }
         /** 视图-集成任务调度者 */
-        interface IIntegrationJobSchedulerView extends ibas.IResidentView {
+        interface IIntegrationJobSchedulerView extends ibas.IView {
             /** 显示任务 */
             showJobs(datas: TaskAction[]): void;
             /** 暂停运行事件 */
             suspendEvent: Function;
             /** 重置事件 */
             resetEvent: Function;
+            /** 显示日志 */
+            showLogs(type: ibas.emMessageType, content: string): void;
+            /** 显示状态 */
+            showStatus(content: string): void;
         }
         /** 任务动作 */
         class TaskAction extends ibas.Action {
             constructor(job?: bo.IntegrationJob);
+            /** 描述 */
+            description: string;
             /** 工作 */
             job: bo.IntegrationJob;
             /** 上次运行时间 */
