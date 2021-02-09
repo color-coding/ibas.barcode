@@ -80,5 +80,17 @@ namespace barcode {
                 });
             }
         }
+        export class BarCodeScannerApplicationMapping extends ibas.ResidentApplicationMapping {
+            /** 构造函数 */
+            constructor() {
+                super();
+                this.id = BarCodeScannerApp.APPLICATION_ID;
+                this.name = BarCodeScannerApp.APPLICATION_NAME;
+                this.description = ibas.i18n.prop(this.name);
+            }
+            create(): ibas.ResidentApplication<ibas.IResidentView> {
+                return new BarCodeScannerApp();
+            }
+        }
     }
 }
