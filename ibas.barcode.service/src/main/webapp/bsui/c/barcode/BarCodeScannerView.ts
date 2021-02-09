@@ -43,7 +43,7 @@ namespace barcode {
                 /** 绘制视图 */
                 draw(): any {
                     let that: this = this;
-                    let dialog: sap.m.Dialog = new sap.extension.m.Dialog("", {
+                    let dialog: sap.m.Dialog = new sap.m.Dialog("", {
                         title: this.title,
                         type: sap.m.DialogType.Standard,
                         state: sap.ui.core.ValueState.None,
@@ -71,7 +71,7 @@ namespace barcode {
                                 }
                             }),
                         ]
-                    });
+                    }).addStyleClass("sapUiNoContentPadding");
                     // sap.m.Dialog的buttons属性中只能添加Button,这里重写其校验方法
                     // sap.ui.unified.FileUploader上传控件仅显示按钮时也可添加
                     let validateAggregation: Function = (<any>dialog).validateAggregation;
