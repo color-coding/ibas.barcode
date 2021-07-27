@@ -57,6 +57,8 @@ namespace barcode {
             text: string;
             /** 错误 */
             error?: Error;
+            /** 继续扫描 */
+            continueScan?: Function;
         }
         /** 扫描结果-结果已格式化 */
         export interface IScanFormatResult extends IScanResult {
@@ -74,12 +76,14 @@ namespace barcode {
         }
         /** 条码/二维码扫描契约 */
         export interface IBarCodeScannerContract extends ibas.IServiceContract {
-            /** 扫码类型 */
+            /** 扫码类型 默认为all */
             scanType?: emBarCodeType;
-            /** 是否格式化扫码结果 */
+            /** 是否格式化扫码结果 默认为true */
             needFormat?: boolean;
-            /** 是否可以从本地选择图片 */
+            /** 是否可以从本地选择图片 默认为true */
             enableLocalFile?: boolean;
+            /** 是否连续扫描 默认为false */
+            continuousScan?: boolean;
         }
         /** 条码/二维码扫描服务代理 */
         export class BarCodeScannerServiceProxy extends ibas.ServiceProxy<IBarCodeScannerContract> {

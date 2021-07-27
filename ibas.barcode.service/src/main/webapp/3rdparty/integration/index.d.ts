@@ -1256,6 +1256,8 @@ declare namespace integration {
             showActions(datas: bo.Action[]): void;
             /** 显示消息 */
             showMessages(type: ibas.emMessageType, message: string): void;
+            /** 忙状态 */
+            busy(value: boolean): void;
         }
     }
 }
