@@ -22,30 +22,49 @@ namespace barcode {
             }
             /** 运行服务 */
             runService(contract: IBarCodeScannerContract): void {
+
+            }
+            /** 完成 */
+            private onCompleted: Function;
+            run(...args: any[]): void {
                 let that: this = this;
-                // 是否格式化扫码结果
-                this.needFormat = contract.needFormat === true;
-                let methods: ibas.IList<ScanMethod> = scanMethods();
-                let method: ScanMethod = methods.firstOrDefault(c => c.enabled);
-                if (!ibas.objects.isNull(method)) {
-                    method.scan({
-                        onCompleted(result: IScanResult): void {
-                            that.fireCompleted(result);
+                if (!ibas.objects.isNull(args) && args.length === 1) {
+                    // 判断是否为选择契约
+                    if (!!args[0].onCompleted) {
+                        this.onCompleted = args[0].onCompleted;
+                    }
+                    if (!!args[0].proxy) {
+                        let contract: IBarCodeScannerContract = args[0].proxy.contract;
+                        // 是否格式化扫码结果
+                        this.needFormat = contract.needFormat === true;
+                        let methods: ibas.IList<ScanMethod> = scanMethods();
+                        let method: ScanMethod = methods.firstOrDefault(c => c.enabled);
+                        if (!ibas.objects.isNull(method)) {
+                            method.scan({
+                                onCompleted(result: IScanResult): void {
+                                    that.fireCompleted(result);
+                                }
+                            });
+                        } else {
+                            if (ibas.objects.isNull(contract.scanType)) {
+                                this.scanType = emBarCodeType.ALL;
+                            } else {
+                                this.scanType = contract.scanType;
+                            }
+                            if (ibas.objects.isNull(contract.continuousScan)) {
+                                this.continuousScan = false;
+                            } else {
+                                this.continuousScan = contract.continuousScan;
+                            }
+                            if (ibas.objects.isNull(contract.enableLocalFile)) {
+                                // 默认可以从本地上传图片
+                                this.enableLocalFile = true;
+                            } else {
+                                this.enableLocalFile = contract.enableLocalFile;
+                            }
+                            this.show();
                         }
-                    });
-                } else {
-                    if (ibas.objects.isNull(contract.scanType)) {
-                        this.scanType = emBarCodeType.ALL;
-                    } else {
-                        this.scanType = contract.scanType;
                     }
-                    if (ibas.objects.isNull(contract.enableLocalFile)) {
-                        // 默认可以从本地上传图片
-                        this.enableLocalFile = true;
-                    } else {
-                        this.enableLocalFile = contract.enableLocalFile;
-                    }
-                    this.show();
                 }
             }
             /** 注册视图 */
@@ -66,6 +85,8 @@ namespace barcode {
             private needFormat: boolean;
             /** 是否可以从本地选择图片 */
             private enableLocalFile: boolean;
+            /** 是否连续扫描 */
+            private continuousScan: boolean;
             /** 视图显示后 */
             protected viewShowed(): void {
                 // 视图加载完成
@@ -103,9 +124,15 @@ namespace barcode {
                         ibas.logger.log(ibas.emMessageLevel.ERROR, "scan code Error:" + result.error.message);
                     }
                 }
+                // 不需要格式化扫码结果,直接返回
                 if (!this.needFormat || result.cancelled || !!result.error) {
-                    // 不需要格式化扫码结果,直接返回
-                    super.fireCompleted(result);
+                    // 如果不是连续扫描或点击的是退出
+                    if (!this.continuousScan || result.cancelled) {
+                        this.close();
+                    }
+                    if (!ibas.objects.isNull(this.onCompleted)) {
+                        this.onCompleted(result);
+                    }
                 } else {
                     let formatResult: IScanFormatResult = result;
                     let boRepository: integration.bo.IBORepositoryIntegration =
@@ -141,7 +168,13 @@ namespace barcode {
                         });
                     } else {
                         formatResult.formatError = new Error(ibas.i18n.prop("barcode_not_have_privilege_for_integration_module"));
-                        super.fireCompleted(formatResult);
+                        // 如果不是连续扫描或点击的是退出
+                        if (!this.continuousScan || result.cancelled) {
+                            this.close();
+                        }
+                        if (!ibas.objects.isNull(this.onCompleted)) {
+                            this.onCompleted(result);
+                        }
                     }
                 }
             }
