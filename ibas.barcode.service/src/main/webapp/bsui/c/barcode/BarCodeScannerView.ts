@@ -268,6 +268,19 @@ namespace barcode {
                         viewContent.destroy(true);
                     }
                 }
+
+                // 停止扫描
+                stopScanner(): void {
+                    if (!ibas.objects.isNull(this.codeReader)) {
+                        this.codeReader.stopStreams();
+                    }
+                }
+                // 继续扫描
+                continueScan(): void {
+                    if (!ibas.objects.isNull(this.codeReader)) {
+                        this.decodeFromInputVideoDevice();
+                    }
+                }
             }
         }
     }

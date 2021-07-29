@@ -57,6 +57,8 @@ namespace barcode {
             text: string;
             /** 错误 */
             error?: Error;
+            /** 继续扫描 */
+            continueScan?: Function;
         }
         /** 扫描结果-结果已格式化 */
         export interface IScanFormatResult extends IScanResult {

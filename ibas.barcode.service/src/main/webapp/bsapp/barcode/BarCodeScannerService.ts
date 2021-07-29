@@ -131,6 +131,14 @@ namespace barcode {
                         this.close();
                     }
                     if (!ibas.objects.isNull(this.onCompleted)) {
+                        result.continueScan = function (isContinue: boolean): void {
+                            if (isContinue) {
+                                that.view.continueScan();
+                            } else {
+                                that.close();
+                            }
+                        };
+                        this.view.stopScanner();
                         this.onCompleted(result);
                     }
                 } else {
@@ -344,6 +352,10 @@ namespace barcode {
             showScanner(type: emBarCodeType): void;
             // 复位
             reset(): void;
+            // 停止扫描
+            stopScanner(): void;
+            // 继续扫描
+            continueScan(): void;
         }
         /** 条码/二维码扫描服务 */
         export class BarCodeScannerServiceMapping extends ibas.ServiceMapping {
