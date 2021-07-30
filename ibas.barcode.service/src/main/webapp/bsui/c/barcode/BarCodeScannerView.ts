@@ -61,6 +61,9 @@ namespace barcode {
                                     width: "100%",
                                     text: this.title,
                                     press: function (): void {
+                                        if (that.scanRecords.length === 0) {
+                                            return;
+                                        }
                                         let messageView: sap.m.SelectList = new sap.m.SelectList("", {
                                             items: {
                                                 path: "/rows",
