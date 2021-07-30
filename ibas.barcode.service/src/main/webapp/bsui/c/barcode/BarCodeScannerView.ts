@@ -16,6 +16,9 @@ namespace barcode {
                 enableLocalFile: boolean;
                 // 扫描
                 scanEvent: Function;
+                private messageButton: sap.m.Button;
+                private scanRecords: ibas.ArrayList<{ value: string }>;
+                private dialog: sap.m.Dialog;
                 /** 绘制工具条视图 */
                 drawBar(): any {
                     let that: this = this;
@@ -43,20 +46,65 @@ namespace barcode {
                 /** 绘制视图 */
                 draw(): any {
                     let that: this = this;
-                    let dialog: sap.m.Dialog = new sap.m.Dialog("", {
-                        title: this.title,
+                    this.scanRecords = new ibas.ArrayList<{ value: string }>();
+                    that.dialog = new sap.m.Dialog("", {
                         type: sap.m.DialogType.Standard,
                         state: sap.ui.core.ValueState.None,
                         stretch: ibas.config.get(ibas.CONFIG_ITEM_PLANTFORM) === ibas.emPlantform.PHONE ? true : false,
                         horizontalScrolling: true,
                         verticalScrolling: true,
+                        showHeader: false,
+                        customHeader: new sap.m.Toolbar("", {
+                            content: [
+                                this.messageButton = new sap.m.Button("", {
+                                    type: sap.m.ButtonType.Transparent,
+                                    width: "100%",
+                                    text: this.title,
+                                    press: function (): void {
+                                        let messageView: sap.m.SelectList = new sap.m.SelectList("", {
+                                            items: {
+                                                path: "/rows",
+                                                template: new sap.ui.core.Item("", {
+                                                    text: "{value}"
+                                                })
+                                            },
+                                        });
+                                        messageView.setModel(new sap.extension.model.JSONModel({ rows: that.scanRecords }));
+                                        let oPopover: sap.m.Popover = new sap.m.Popover("", {
+                                            verticalScrolling: true,
+                                            showHeader: false,
+                                            placement: sap.m.PlacementType.Bottom,
+                                            contentWidth: "auto",
+                                            contentHeight: "50%",
+                                            modal: true,
+                                            content: [
+                                                messageView,
+                                            ],
+                                            footer: new sap.m.Toolbar("", {
+                                                content: [
+                                                    new sap.m.Button("", {
+                                                        width: "100%",
+                                                        text: ibas.i18n.prop("shell_exit"),
+                                                        type: sap.m.ButtonType.Transparent,
+                                                        press: function (): void {
+                                                            oPopover.close();
+                                                        }
+                                                    }),
+                                                ]
+                                            })
+                                        });
+                                        oPopover.openBy(this, true);
+                                    }
+                                }),
+                            ]
+                        }),
                         content: [
                             new sap.ui.core.HTML("", {
                                 content: "<div id=\"bar_code_scanner\"><video id=\"video\"></video></div>",
                                 preferDOM: false,
                                 sanitizeContent: true,
                                 visible: true,
-                            })
+                            }),
                         ],
                         buttons: [
                             new sap.m.Button("", {
@@ -66,7 +114,7 @@ namespace barcode {
                                 press: function (): void {
                                     that.fireViewEvents(that.scanEvent, {
                                         cancelled: true,
-                                        text: undefined
+                                        text: undefined,
                                     });
                                 }
                             }),
@@ -74,19 +122,19 @@ namespace barcode {
                     }).addStyleClass("sapUiNoContentPadding");
                     // sap.m.Dialog的buttons属性中只能添加Button,这里重写其校验方法
                     // sap.ui.unified.FileUploader上传控件仅显示按钮时也可添加
-                    let validateAggregation: Function = (<any>dialog).validateAggregation;
-                    (<any>dialog).validateAggregation = function (sAggregationName: string, oObject: sap.ui.base.ManagedObject | any, bMultiple: boolean): any {
+                    let validateAggregation: Function = (<any>that.dialog).validateAggregation;
+                    (<any>that.dialog).validateAggregation = function (sAggregationName: string, oObject: sap.ui.base.ManagedObject | any, bMultiple: boolean): any {
                         if (sAggregationName === "buttons" && oObject instanceof sap.ui.unified.FileUploader) {
                             // 仅显示按钮
                             if (oObject.getButtonOnly()) {
                                 return oObject;
                             }
                         } else {
-                            return validateAggregation.apply(dialog, arguments);
+                            return validateAggregation.apply(that.dialog, arguments);
                         }
                     };
                     if (!!this.enableLocalFile) {
-                        dialog.insertButton(<any>new sap.ui.unified.FileUploader("", {
+                        that.dialog.insertButton(<any>new sap.ui.unified.FileUploader("", {
                             buttonOnly: true,
                             buttonText: ibas.i18n.prop("barcode_btn_decodelocalimage"),
                             multiple: false,
@@ -105,10 +153,9 @@ namespace barcode {
                                 if (!ibas.objects.isNull(that.codeReader)) {
                                     that.codeReader.decodeFromImage(undefined, imageUrl)
                                         .then((result) => {
-                                            that.fireViewEvents(that.scanEvent, {
-                                                cancelled: false,
-                                                text: result.text
-                                            });
+                                            if (!!result) {
+                                                that.callScanEvent(result);
+                                            }
                                         }).catch((err) => {
                                             // 解码失败
                                             that.application.viewShower.proceeding(that,
@@ -123,19 +170,19 @@ namespace barcode {
                     } else {
                         if (ibas.config.get(ibas.CONFIG_ITEM_PLANTFORM) === ibas.emPlantform.PHONE) {
                             // 移动端加个按钮撑一下空间,不然上传控件太靠左了
-                            dialog.insertButton(new sap.m.Button("", {
+                            that.dialog.insertButton(new sap.m.Button("", {
                                 type: sap.m.ButtonType.Transparent,
                             }), 0);
                         }
                     }
                     if (ibas.config.get(ibas.CONFIG_ITEM_PLANTFORM) === ibas.emPlantform.PHONE) {
                         // 移动端加个按钮撑一下空间,不然上传控件太靠左了
-                        dialog.insertButton(new sap.m.Button("", {
+                        that.dialog.insertButton(new sap.m.Button("", {
                             type: sap.m.ButtonType.Transparent,
                         }), 0);
                     }
-                    this.id = dialog.getId();
-                    return dialog;
+                    this.id = that.dialog.getId();
+                    return that.dialog;
                 }
                 codeReader: any;
                 zxing: any;
@@ -206,10 +253,7 @@ namespace barcode {
                                 }
                                 that.codeReader.decodeFromVideoDevice(firstDeviceId, "video", (result, err) => {
                                     if (!!result) {
-                                        that.fireViewEvents(that.scanEvent, {
-                                            cancelled: false,
-                                            text: result.text
-                                        });
+                                        that.callScanEvent(result);
                                     }
                                     if (!!err && !!that.zxing && !(err instanceof that.zxing.NotFoundException)) {
                                         // 解码失败
@@ -258,6 +302,16 @@ namespace barcode {
                         , svgCss, rectCss, lineCss, animateLineCss)
                     );
                 }
+                callScanEvent(result: any): void {
+                    if (this.scanRecords.filter(c => { return c.value === result.text; }).length === 0) {
+                        this.scanRecords.add({ value: result.text });
+                        this.messageButton.setText(ibas.i18n.prop("barcode_ui_scan_message", this.scanRecords.length.toString()));
+                        this.fireViewEvents(this.scanEvent, {
+                            cancelled: false,
+                            text: result.text
+                        });
+                    }
+                }
                 /** 复位 */
                 reset(): void {
                     if (!ibas.objects.isNull(this.codeReader)) {
@@ -267,6 +321,11 @@ namespace barcode {
                     if (!ibas.objects.isNull(viewContent)) {
                         viewContent.destroy(true);
                     }
+                }
+                // 继续扫描
+                showScanMessage(message: string): void {
+                    this.messageButton.setText(ibas.strings.format("{0},{1}",
+                        ibas.i18n.prop("barcode_ui_scan_message", this.scanRecords.length.toString()), message));
                 }
             }
         }
