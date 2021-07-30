@@ -32,5 +32,6 @@
   "barcode_not_found_integrationjob": "没有找到扫码解析规则",
   "barcode_not_found_job_actions": "没有找到扫码解析规则[{0}]的动作",
   "barcode_not_use_https_protocol": "检测到当前系统未使用https协议,不能启动摄像头",
+  "barcode_ui_scan_message": "已扫描[{0}]次",
   "barcode_closing_delimiter": "----结束----"
 }
