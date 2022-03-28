@@ -152,22 +152,29 @@ namespace barcode {
                                     return;
                                 }
                                 let oURL: any = window.URL || (<any>window).webkitURL;
-                                let imageUrl: string = oURL.createObjectURL(files[0]);
-                                if (!ibas.objects.isNull(that.codeReader)) {
-                                    that.codeReader.decodeFromImage(undefined, imageUrl)
-                                        .then((result) => {
-                                            if (!!result) {
-                                                that.callScanEvent(result);
-                                            }
-                                        }).catch((err) => {
-                                            // 解码失败
-                                            that.application.viewShower.proceeding(that,
-                                                ibas.emMessageType.ERROR,
-                                                ibas.i18n.prop("barcode_msg_notfoundcode"),
-                                            );
-                                            that.decodeFromInputVideoDevice();
-                                        });
-                                }
+                                let count: number = 0;
+                                let updateImage: Function = (imageUrl: string): void => {
+                                    if (!ibas.objects.isNull(that.codeReader)) {
+                                        that.codeReader.decodeFromImage(undefined, imageUrl)
+                                            .then((result) => {
+                                                if (!!result) {
+                                                    that.callScanEvent(result);
+                                                    count++;
+                                                    if (count < files.length) {
+                                                        updateImage(oURL.createObjectURL(files[count]));
+                                                    }
+                                                }
+                                            }).catch((err) => {
+                                                // 解码失败
+                                                that.application.viewShower.proceeding(that,
+                                                    ibas.emMessageType.ERROR,
+                                                    ibas.i18n.prop("barcode_msg_notfoundcode"),
+                                                );
+                                                that.decodeFromInputVideoDevice();
+                                            });
+                                    }
+                                };
+                                updateImage(oURL.createObjectURL(files[count]));
                             },
                         }), 0);
                     } else {
