@@ -128,14 +128,20 @@ declare namespace integration {
             setLogger(action: IntegrationAction): void;
             /** 运行 */
             protected run(): boolean;
-            /** 调用后台服务 */
+            /**
+             * 调用后台服务
+             * @param name 服务名称
+             * @param params 参数
+             * @param fnBack 回调方法
+             * @param repositoryUrl 业务仓库地址
+             */
             protected goAction(name: string, params: {
                 key: string;
                 value: any;
             }[] | {
                 key: string;
                 value: any;
-            }, fnBack?: (opRslt: ibas.IOperationMessage) => void): void;
+            }, fnBack?: (opRslt: ibas.IOperationMessage) => void, repositoryUrl?: string): void;
             /** 资源文件（可重载） */
             protected resources(): string[] | string;
             /** 运行（需要实现） */
@@ -199,6 +205,8 @@ declare namespace integration {
             activated: boolean;
             /** 配置 */
             configs: ibas.IList<IActionConfig>;
+            /** 依赖库 */
+            dependencies: string[];
         }
         /** 集成-动作 */
         interface IActionConfig {
@@ -215,6 +223,8 @@ declare namespace integration {
             id: string;
             /** 时间 */
             dateTime: Date;
+            /** 说明 */
+            remarks: string;
             /** 动作 */
             actions: IAction[];
         }
@@ -295,6 +305,8 @@ declare namespace integration {
             objectCode: string;
             /** 实例号 */
             logInst: number;
+            /** 显示顺序 */
+            visOrder: number;
             /** 数据源 */
             dataSource: string;
             /** 创建日期 */
@@ -315,6 +327,8 @@ declare namespace integration {
             updateActionId: string;
             /** 与上一个动作的关系 */
             relationship: emActionRelationship;
+            /** 任务项组 */
+            actionGroup: string;
             /** 任务项标识 */
             actionId: string;
             /** 任务项名称 */
@@ -486,6 +500,8 @@ declare namespace integration {
             id: string;
             /** 时间 */
             dateTime: Date;
+            /** 说明 */
+            remarks: string;
             /** 动作 */
             actions: Action[];
         }
@@ -686,6 +702,12 @@ declare namespace integration {
             get logInst(): number;
             /** 设置-实例号 */
             set logInst(value: number);
+            /** 映射的属性名称-显示顺序 */
+            static PROPERTY_VISORDER_NAME: string;
+            /** 获取-显示顺序 */
+            get visOrder(): number;
+            /** 设置-显示顺序 */
+            set visOrder(value: number);
             /** 映射的属性名称-数据源 */
             static PROPERTY_DATASOURCE_NAME: string;
             /** 获取-数据源 */
@@ -746,6 +768,12 @@ declare namespace integration {
             get relationship(): emActionRelationship;
             /** 设置-与上一个动作的关系 */
             set relationship(value: emActionRelationship);
+            /** 映射的属性名称-任务项组 */
+            static PROPERTY_ACTIONGROUP_NAME: string;
+            /** 获取-任务项组 */
+            get actionGroup(): string;
+            /** 设置-任务项组 */
+            set actionGroup(value: string);
             /** 映射的属性名称-任务项标识 */
             static PROPERTY_ACTIONID_NAME: string;
             /** 获取-任务项标识 */
@@ -976,6 +1004,11 @@ declare namespace integration {
              */
             deleteActionPackage(deleter: IPackageDeleter): void;
             /**
+             * 删除 集成动作
+             * @param fetcher 查询者
+             */
+            commentActionPackage(commenter: IPackageCommenter): void;
+            /**
              * 上传程序包
              * @param caller 调用者
              */
@@ -994,36 +1027,21 @@ declare namespace integration {
              */
             toPackageUrl(action: bo.Action): string;
             /**
-             * 下载代码文件
-             * @param caller 调用者
-             */
-            downloadCode(caller: ICodeDownloader<Blob>): void;
-            /**
              * 调用后台动作
              * @param caller 调用者
              */
             goAction(caller: IActionGoer): void;
         }
-        /** 代码下载者 */
-        interface ICodeDownloader<T> extends ibas.IMethodCaller<T> {
-            /** 标识 */
-            action: bo.Action;
-        }
         /** 包删除者 */
         interface IPackageDeleter extends ibas.IMethodCaller<any> {
-            /** 被删除 */
-            beDeleted: string;
-        }
-        /** 代码下载仓库 */
-        class CodeRepositoryDownloadAjax extends ibas.RemoteRepositoryAjax {
-            constructor();
-            /**
-             * 下载文件
-             * @param method 方法地址
-             * @param caller 调用者
-             */
-            download<T>(method: string, caller: ibas.IMethodCaller<any>): void;
-            protected createHttpRequest(method: string): XMLHttpRequest;
+            /** 包 */
+            package: string;
+        } /** 包删除者 */
+        interface IPackageCommenter extends ibas.IMethodCaller<any> {
+            /** 包 */
+            package: string;
+            /** 注释 */
+            remarks: string;
         }
         /** 业务对象仓库-集成开发 */
         class BORepositoryIntegrationDevelopment extends ibas.BORepositoryApplication {
@@ -1157,7 +1175,7 @@ declare namespace integration {
         /** 视图-集成任务 */
         interface IIntegrationActionChooseView extends ibas.IBOChooseView {
             /** 显示数据 */
-            showData(datas: bo.Action[]): void;
+            showData(datas: bo.ActionPackage[]): void;
         }
         /** 集成任务选择服务映射 */
         class IntegrationActionChooseServiceMapping extends ibas.BOChooseServiceMapping {
@@ -1195,6 +1213,8 @@ declare namespace integration {
             protected uploadPackage(formData: FormData): void;
             /** 删除数据，参数：目标数据集合 */
             protected deletePackage(data: bo.ActionPackage | bo.ActionPackage[]): void;
+            /** 查询数据 */
+            protected commentPackage(aPackage: bo.ActionPackage, remarks: string): void;
             protected viewAction(data: bo.Action): void;
         }
         /** 视图-集成任务 */
@@ -1205,8 +1225,10 @@ declare namespace integration {
             uploadPackageEvent: Function;
             /** 删除数据事件，参数：删除对象集合 */
             deletePackageEvent: Function;
+            /** 注释包 */
+            commentPackageEvent: Function;
             /** 显示包 */
-            showPackages(datas: bo.ActionPackage[]): void;
+            showPackages(datas: bo.ActionPackage[] | bo.ActionPackage): void;
             /** 查看动作 */
             viewActionEvent: Function;
             /** 显示动作 */
@@ -1242,9 +1264,11 @@ declare namespace integration {
             run(): void;
             run(action: bo.Action | bo.Action[]): void;
             private actions;
-            private groupAction;
+            private myWorker;
+            private logger;
             private runActions;
             private stopActions;
+            close(): void;
         }
         /** 视图-动作运行 */
         interface IIntegrationActionRunnerView extends ibas.IView {
@@ -1394,19 +1418,33 @@ declare namespace integration {
             lastRunTime: number;
             /** 激活的 */
             activated: boolean;
-            /** 日志者 */
-            logger: ibas.ILogger;
-            /** 设置日志记录者 */
-            setLogger(logger: ibas.ILogger): void;
             /** 进行 */
             do(): void;
             protected done(): void;
-            /** 运行 */
+            private myWorker;
             protected run(): boolean;
-            /** 运行子任务 */
-            private runActions;
-            /** 子任务 */
-            private actions;
+            stop(): void;
+        }
+    }
+}
+/**
+ * @license
+ * Copyright Color-Coding Studio. All Rights Reserved.
+ *
+ * Use of this source code is governed by an Apache License, Version 2.0
+ * that can be found in the LICENSE file at http://www.apache.org/licenses/LICENSE-2.0
+ */
+declare namespace integration {
+    namespace app {
+        class IntegrationWorker extends ibas.Worker {
+            protected getActions(): ibas.IList<bo.IAction>;
+            protected filterScripts(src: string): boolean;
+            protected run(): void;
+        }
+        class IntegrationScheduleWorker extends IntegrationWorker {
+            constructor(name: string);
+            protected getJobId(): number;
+            protected run(): boolean;
         }
     }
 }
@@ -1599,6 +1637,14 @@ declare namespace integration {
             protected editData(data: bo.IntegrationJob): void;
             /** 删除数据，参数：目标数据集合 */
             protected deleteData(data: bo.IntegrationJob | bo.IntegrationJob[]): void;
+            /** 选择程序包 */
+            protected chooseActionPackage(): void;
+            /** 批量更新接口 */
+            protected batchUpdateAction(datas: bo.IntegrationJob[], selectedPackage: bo.ActionPackage): Promise<void>;
+            /** 保存集成任务 */
+            private saveJob;
+            /** 获取所有集成任务 */
+            private getAllIntegrations;
         }
         /** 视图-集成任务 */
         interface IIntegrationJobListView extends ibas.IBOListView {
@@ -1608,6 +1654,17 @@ declare namespace integration {
             deleteDataEvent: Function;
             /** 显示数据 */
             showData(datas: bo.IntegrationJob[]): void;
+            /** 批量更新接口 */
+            batchUpdateActionEvent: Function;
+            /** 选择程序包 */
+            chooseActionPackageEvent: Function;
+            /** 显示程序包 */
+            showActionPackage(datas: bo.ActionPackage[]): void;
+        }
+        interface IUpdateLog {
+            jobName: string;
+            jobActionName: string;
+            updateMessage: string;
         }
     }
 }
