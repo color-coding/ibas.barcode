@@ -251,7 +251,7 @@ namespace barcode {
                                     return "";
                                 }
                                 // 允许多次调用
-                                return (url.indexOf("?") === -1 ? "?" : "&") + "token=" + token + "&_=" + rtVersion;
+                                return (url.indexOf("?") === -1 ? "?" : "&") + "token=" + ibas.tokens.content(token) + "&_=" + rtVersion;
                             }
                         });
                         let path: string = usingAction.path;

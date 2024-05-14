@@ -14,6 +14,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
+import javax.ws.rs.HeaderParam;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
@@ -60,18 +61,21 @@ public class FileService extends FileRepositoryService {
 	@Path("upload")
 	@Consumes(MediaType.MULTIPART_FORM_DATA)
 	@Produces(MediaType.APPLICATION_JSON)
-	public OperationResult<FileData> upload(FormDataMultiPart formData, @QueryParam("token") String token) {
-		return super.save(formData.getField("file"), token);
+	public OperationResult<FileData> upload(FormDataMultiPart formData,
+			@HeaderParam("authorization") String authorization, @QueryParam("token") String token) {
+		return super.save(formData.getField("file"), MyConfiguration.optToken(authorization, token));
 	}
 
 	@POST
 	@Path("download")
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_OCTET_STREAM)
-	public void download(Criteria criteria, @QueryParam("token") String token, @Context HttpServletResponse response) {
+	public void download(Criteria criteria, @HeaderParam("authorization") String authorization,
+			@QueryParam("token") String token, @Context HttpServletResponse response) {
 		try {
 			// 获取文件
-			IOperationResult<FileData> operationResult = this.fetch(criteria, token);
+			IOperationResult<FileData> operationResult = this.fetch(criteria,
+					MyConfiguration.optToken(authorization, token));
 			if (operationResult.getError() != null) {
 				throw operationResult.getError();
 			}
@@ -132,8 +136,9 @@ public class FileService extends FileRepositoryService {
 
 	@GET
 	@Path("barcode")
-	public void createBarCode(@QueryParam("token") String token, @QueryParam("content") String content,
-			@Context HttpServletRequest request, @Context HttpServletResponse response) {
+	public void createBarCode(@HeaderParam("authorization") String authorization, @QueryParam("token") String token,
+			@QueryParam("content") String content, @Context HttpServletRequest request,
+			@Context HttpServletResponse response) {
 		try {
 			if (content == null || "".equals(content)) {
 				throw new Exception("content is empty");
@@ -190,8 +195,9 @@ public class FileService extends FileRepositoryService {
 
 	@GET
 	@Path("qrcode")
-	public void createQRCode(@QueryParam("token") String token, @QueryParam("content") String content,
-			@Context HttpServletRequest request, @Context HttpServletResponse response) {
+	public void createQRCode(@HeaderParam("authorization") String authorization, @QueryParam("token") String token,
+			@QueryParam("content") String content, @Context HttpServletRequest request,
+			@Context HttpServletResponse response) {
 		try {
 			if (content == null || "".equals(content)) {
 				throw new Exception("content is empty");

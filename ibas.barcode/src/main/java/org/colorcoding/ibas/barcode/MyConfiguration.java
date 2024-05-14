@@ -3,7 +3,7 @@ package org.colorcoding.ibas.barcode;
 /**
  * 我的配置项
  */
-public class MyConfiguration extends org.colorcoding.ibas.bobas.MyConfiguration {
+public class MyConfiguration extends org.colorcoding.ibas.initialfantasy.MyConfiguration {
 
     /**
     * 模块标识
