@@ -1,1 +1,7 @@
-[]
+[
+    {
+        "em_barcodetype_all": "All",
+        "em_barcodetype_bar_code": "Bar Code",
+        "em_barcodetype_qr_code": "QR Code"
+    }
+]
