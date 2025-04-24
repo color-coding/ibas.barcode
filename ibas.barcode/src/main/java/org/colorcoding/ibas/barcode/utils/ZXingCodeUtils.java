@@ -12,7 +12,7 @@ import java.util.Map;
 
 import javax.imageio.ImageIO;
 
-import org.colorcoding.ibas.bobas.message.Logger;
+import org.colorcoding.ibas.bobas.logging.Logger;
 
 import com.google.zxing.BarcodeFormat;
 import com.google.zxing.EncodeHintType;
