@@ -7,6 +7,10 @@ import java.security.MessageDigest;
 import java.util.Formatter;
 import java.util.UUID;
 
+import javax.json.Json;
+import javax.json.JsonObject;
+import javax.json.JsonObjectBuilder;
+import javax.json.JsonValue;
 import javax.ws.rs.BadRequestException;
 
 import org.colorcoding.ibas.bobas.common.Criteria;
@@ -16,18 +20,13 @@ import org.colorcoding.ibas.bobas.common.IOperationResult;
 import org.colorcoding.ibas.bobas.common.OperationResult;
 import org.colorcoding.ibas.bobas.data.emYesNo;
 import org.colorcoding.ibas.bobas.i18n.I18N;
-import org.colorcoding.ibas.bobas.message.Logger;
-import org.colorcoding.ibas.bobas.message.MessageLevel;
+import org.colorcoding.ibas.bobas.logging.Logger;
+import org.colorcoding.ibas.bobas.logging.LoggingLevel;
 import org.colorcoding.ibas.bobas.repository.BORepositoryServiceApplication;
 import org.colorcoding.ibas.thirdpartyapp.bo.application.Application;
 import org.colorcoding.ibas.thirdpartyapp.bo.application.IApplication;
 import org.colorcoding.ibas.thirdpartyapp.bo.other.ApplicationSetting;
 import org.colorcoding.ibas.thirdpartyapp.repository.BORepositoryThirdPartyApp;
-
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.JsonNodeFactory;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 
 /**
  * BarCode仓库
@@ -74,23 +73,24 @@ public class BORepositoryBarCode extends BORepositoryServiceApplication
 			condition = criteria.getConditions().create();
 			condition.setAlias(Application.PROPERTY_ACTIVATED.getName());
 			condition.setValue(emYesNo.YES);
-			BORepositoryThirdPartyApp boRepository = new BORepositoryThirdPartyApp();
-			boRepository.setUserToken(token);
-			IOperationResult<IApplication> opRsltApp = boRepository.fetchApplication(criteria);
-			IApplication application = opRsltApp.getResultObjects().firstOrDefault();
-			if (application == null) {
-				throw new Exception(I18N.prop("msg_tpa_invaild_application", appCode));
+			try (BORepositoryThirdPartyApp boRepository = new BORepositoryThirdPartyApp()) {
+				boRepository.setUserToken(token);
+				IOperationResult<IApplication> opRsltApp = boRepository.fetchApplication(criteria);
+				IApplication application = opRsltApp.getResultObjects().firstOrDefault();
+				if (application == null) {
+					throw new Exception(I18N.prop("msg_tpa_invaild_application", appCode));
+				}
+				ApplicationSetting appSetting = boRepository.createApplicationSetting(application);
+				if (appSetting == null) {
+					throw new Exception(I18N.prop("msg_tpa_invaild_application", appCode));
+				}
+				JsonObject result = this.generateWechatSignature(appSetting.paramValue("AppId"),
+						appSetting.paramValue("AppSecret"), url);
+				if (result.get("error") != null) {
+					throw new Exception(this.nodeValue(result, "error"));
+				}
+				opRslt.addResultObjects(result.toString());
 			}
-			ApplicationSetting appSetting = boRepository.createApplicationSetting(application);
-			if (appSetting == null) {
-				throw new Exception(I18N.prop("msg_tpa_invaild_application", appCode));
-			}
-			JsonNode result = this.generateWechatSignature(appSetting.paramValue("AppId"),
-					appSetting.paramValue("AppSecret"), url);
-			if (result.get("error") != null) {
-				throw new Exception(this.nodeValue(result, "error"));
-			}
-			opRslt.addResultObjects(result.toString());
 		} catch (Exception e) {
 			opRslt.setError(e);
 		}
@@ -98,10 +98,9 @@ public class BORepositoryBarCode extends BORepositoryServiceApplication
 	}
 
 	// --------------------------------------------------------------------------------------------//
-	public JsonNode generateWechatSignature(String appId, String appSecret, String url) throws Exception {
-		JsonNodeFactory factory = JsonNodeFactory.instance;
+	public JsonObject generateWechatSignature(String appId, String appSecret, String url) throws Exception {
 		// 根节点
-		ObjectNode rootNode = new ObjectNode(factory);
+		JsonObjectBuilder rootNode = Json.createObjectBuilder();
 		try {
 			// JsApi票据
 			String ticket = this.getJsApiTicket(appId, appSecret);
@@ -118,32 +117,32 @@ public class BORepositoryBarCode extends BORepositoryServiceApplication
 			crypt.reset();
 			crypt.update(join_str.getBytes("UTF-8"));
 			signature = byteToHex(crypt.digest());
-			rootNode.put("url", url);
+			rootNode.add("url", url);
 			// 注意这里 要加上自己的appId
-			rootNode.put("appId", appId);
-			rootNode.put("jsapi_ticket", ticket);
-			rootNode.put("nonceStr", nonce_str);
-			rootNode.put("timestamp", timestamp);
-			rootNode.put("signature", signature);
+			rootNode.add("appId", appId);
+			rootNode.add("jsapi_ticket", ticket);
+			rootNode.add("nonceStr", nonce_str);
+			rootNode.add("timestamp", timestamp);
+			rootNode.add("signature", signature);
 		} catch (Exception e) {
-			rootNode.removeAll();
-			rootNode.put("error", e.getMessage());
+			rootNode = Json.createObjectBuilder();
+			rootNode.add("error", e.getMessage());
 		}
-		return rootNode;
+		return rootNode.build();
 	}
 
 	protected String getJsApiTicket(String appId, String appSecret) throws Exception {
 		// TODO:微信API调用次数有限,应先从缓存中取
 		String url = String.format(URL_TEMPLATE_JS_API_TICKET, this.getAccesstoken(appId, appSecret));
-		JsonNode data = this.doGet(url);
+		JsonObject data = this.doGet(url);
 		if (data == null) {
 			throw new BadRequestException(I18N.prop("msg_tpa_faild_ticket_request"));
 		}
-		JsonNode errNode = data.get("errmsg");
+		JsonValue errNode = data.get("errmsg");
 		if (errNode == null || !"ok".equalsIgnoreCase(this.nodeValue(data, "errmsg"))) {
-			throw new BadRequestException(errNode.textValue());
+			throw new BadRequestException(errNode.toString());
 		}
-		JsonNode ticketNode = data.get("ticket");
+		JsonValue ticketNode = data.get("ticket");
 		if (ticketNode != null) {
 			return this.nodeValue(data, "ticket");
 		} else {
@@ -154,15 +153,15 @@ public class BORepositoryBarCode extends BORepositoryServiceApplication
 	protected String getAccesstoken(String appId, String appSecret) throws Exception {
 		// TODO:微信API调用次数有限,应先从缓存中取
 		String url = String.format(URL_TEMPLATE_ACCESSTOKEN, appId, appSecret);
-		JsonNode data = this.doGet(url);
+		JsonObject data = this.doGet(url);
 		if (data == null) {
 			throw new BadRequestException(I18N.prop("msg_tpa_faild_accesstoken_request"));
 		}
-		JsonNode errNode = data.get("errmsg");
+		JsonValue errNode = data.get("errmsg");
 		if (errNode != null) {
-			throw new BadRequestException(errNode.textValue());
+			throw new BadRequestException(errNode.toString());
 		}
-		JsonNode accessTokenNode = data.get("access_token");
+		JsonValue accessTokenNode = data.get("access_token");
 		if (accessTokenNode != null) {
 			return this.nodeValue(data, "access_token");
 		} else {
@@ -170,16 +169,16 @@ public class BORepositoryBarCode extends BORepositoryServiceApplication
 		}
 	}
 
-	protected String nodeValue(JsonNode data, String name) throws BadRequestException {
-		JsonNode node = data.get(name);
+	protected String nodeValue(JsonObject data, String name) throws BadRequestException {
+		JsonValue node = data.get(name);
 		if (node == null) {
 			throw new BadRequestException(I18N.prop("msg_tpa_no_return_value", name));
 		}
-		return node.textValue();
+		return node.toString();
 	}
 
-	protected JsonNode doGet(String url) throws IOException {
-		Logger.log(MessageLevel.DEBUG, MSG_CONNECTING_URL, url);
+	protected JsonObject doGet(String url) throws IOException {
+		Logger.log(LoggingLevel.DEBUG, MSG_CONNECTING_URL, url);
 		URL realUrl = new URL(url);
 		// 打开和URL之间的连接
 		URLConnection connection = realUrl.openConnection();
@@ -189,7 +188,7 @@ public class BORepositoryBarCode extends BORepositoryServiceApplication
 		connection.setRequestProperty("Content-Type", "application/json; charset=UTF-8");
 		// 建立实际的连接
 		connection.connect();
-		return new ObjectMapper().readTree(connection.getInputStream());
+		return Json.createReader(connection.getInputStream()).readObject();
 	}
 
 	protected String byteToHex(final byte[] hash) {

@@ -1,38 +1,64 @@
 package org.colorcoding.ibas.barcode;
 
+import org.colorcoding.ibas.bobas.configuration.ConfigurationFactory;
+import org.colorcoding.ibas.bobas.configuration.ConfigurationManager;
+
 /**
  * 我的配置项
  */
 public class MyConfiguration extends org.colorcoding.ibas.initialfantasy.MyConfiguration {
 
-    /**
-    * 模块标识
-    */
-    public static final String MODULE_ID = "41218cef-18b4-4399-ab3c-7ba37bf34b5c";
+	private volatile static ConfigurationManager instance;
 
-    /**
-    * 命名空间
-    */
-    public static final String NAMESPACE_ROOT = "http://colorcoding.org/ibas/barcode/";
+	public static ConfigurationManager create() {
+		if (instance == null) {
+			synchronized (MyConfiguration.class) {
+				if (instance == null) {
+					instance = ConfigurationFactory.createManager();
+					instance.setConfigSign(MODULE_ID);
+					instance.update();
+				}
+			}
+		}
+		return instance;
+	}
 
-    /**
-    * 数据命名空间
-    */
-    public static final String NAMESPACE_DATA = NAMESPACE_ROOT + "data";
+	public static <P> P getConfigValue(String key, P defaultValue) {
+		return create().getConfigValue(key, defaultValue);
+	}
 
-    /**
-    * 业务对象命名空间
-    */
-    public static final String NAMESPACE_BO = NAMESPACE_ROOT + "bo";
+	public static String getConfigValue(String key) {
+		return create().getConfigValue(key);
+	}
 
-    /**
-    * 服务命名空间
-    */
-    public static final String NAMESPACE_SERVICE = NAMESPACE_ROOT + "service";
+	/**
+	 * 模块标识
+	 */
+	public static final String MODULE_ID = "41218cef-18b4-4399-ab3c-7ba37bf34b5c";
 
-    /**
-     * 配置项目-文件文件夹
-     */
-    public final static String CONFIG_ITEM_BARCODE_FILE_FOLDER = "BCFileFolder";
+	/**
+	 * 命名空间
+	 */
+	public static final String NAMESPACE_ROOT = "http://colorcoding.org/ibas/barcode/";
+
+	/**
+	 * 数据命名空间
+	 */
+	public static final String NAMESPACE_DATA = NAMESPACE_ROOT + "data";
+
+	/**
+	 * 业务对象命名空间
+	 */
+	public static final String NAMESPACE_BO = NAMESPACE_ROOT + "bo";
+
+	/**
+	 * 服务命名空间
+	 */
+	public static final String NAMESPACE_SERVICE = NAMESPACE_ROOT + "service";
+
+	/**
+	 * 配置项目-文件文件夹
+	 */
+	public final static String CONFIG_ITEM_BARCODE_FILE_FOLDER = "BCFileFolder";
 
 }
