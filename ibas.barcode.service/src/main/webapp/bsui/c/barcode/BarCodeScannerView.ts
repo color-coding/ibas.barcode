@@ -22,19 +22,8 @@ namespace barcode {
                 /** 绘制工具条视图 */
                 drawBar(): any {
                     let that: this = this;
-                    // 使用此模块库加载器
-                    let require: Require = ibas.requires.create({
-                        context: ibas.requires.naming(CONSOLE_NAME),
-                    });
-                    let imageUrl: string = "";
-                    if (ibas.config.get(ibas.CONFIG_ITEM_PLANTFORM) !== ibas.emPlantform.PHONE
-                        && ibas.config.get(openui5.CONFIG_ITEM_COMPACT_SCREEN, false)) {
-                        imageUrl = require.toUrl("resources/images/scan.c.svg");
-                    } else {
-                        imageUrl = require.toUrl("resources/images/scan.m.svg");
-                    }
                     return new sap.m.Button("", {
-                        icon: imageUrl,
+                        icon: "sap-icon://bar-code",
                         iconDensityAware: false,
                         tooltip: this.title,
                         type: sap.m.ButtonType.Transparent,
