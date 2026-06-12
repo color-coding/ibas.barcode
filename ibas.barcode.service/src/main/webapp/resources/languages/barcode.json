@@ -32,6 +32,5 @@
     "barcode_not_found_integrationjob": "No scan code parsing rules found",
     "barcode_not_found_job_actions": "No action found for scan code parsing rule [{0}]",
     "barcode_not_use_https_protocol": "Detected that the current system is not using HTTPS protocol, unable to start the camera",
-    "barcode_ui_scan_message": "Scanned [{0}] times",
-    "barcode_closing_delimiter": "----End----"
+    "barcode_ui_scan_message": "Scanned [{0}] times"
 }

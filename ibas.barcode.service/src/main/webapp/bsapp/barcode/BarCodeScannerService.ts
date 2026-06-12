@@ -314,7 +314,7 @@ namespace barcode {
                             },
                             function (): void {
                                 // 库加载失败
-                                extraData.formatError = new Error(ibas.i18n.prop("integrationdevelopment_run_action_faild", usingAction.name));
+                                extraData.formatError = new Error(ibas.i18n.prop("integrationdevelopment_run_action_failed", usingAction.name));
                                 resolve(extraData);
                             }
                         );

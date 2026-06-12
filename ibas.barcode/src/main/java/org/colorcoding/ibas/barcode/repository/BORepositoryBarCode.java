@@ -78,11 +78,11 @@ public class BORepositoryBarCode extends BORepositoryServiceApplication
 				IOperationResult<IApplication> opRsltApp = boRepository.fetchApplication(criteria);
 				IApplication application = opRsltApp.getResultObjects().firstOrDefault();
 				if (application == null) {
-					throw new Exception(I18N.prop("msg_tpa_invaild_application", appCode));
+					throw new Exception(I18N.prop("msg_tpa_invalid_application", appCode));
 				}
 				ApplicationSetting appSetting = boRepository.createApplicationSetting(application);
 				if (appSetting == null) {
-					throw new Exception(I18N.prop("msg_tpa_invaild_application", appCode));
+					throw new Exception(I18N.prop("msg_tpa_invalid_application", appCode));
 				}
 				JsonObject result = this.generateWechatSignature(appSetting.paramValue("AppId"),
 						appSetting.paramValue("AppSecret"), url);
@@ -136,7 +136,7 @@ public class BORepositoryBarCode extends BORepositoryServiceApplication
 		String url = String.format(URL_TEMPLATE_JS_API_TICKET, this.getAccesstoken(appId, appSecret));
 		JsonObject data = this.doGet(url);
 		if (data == null) {
-			throw new BadRequestException(I18N.prop("msg_tpa_faild_ticket_request"));
+			throw new BadRequestException(I18N.prop("msg_tpa_failed_ticket_request"));
 		}
 		JsonValue errNode = data.get("errmsg");
 		if (errNode == null || !"ok".equalsIgnoreCase(this.nodeValue(data, "errmsg"))) {
@@ -146,7 +146,7 @@ public class BORepositoryBarCode extends BORepositoryServiceApplication
 		if (ticketNode != null) {
 			return this.nodeValue(data, "ticket");
 		} else {
-			throw new BadRequestException(I18N.prop("msg_tpa_faild_ticket_request"));
+			throw new BadRequestException(I18N.prop("msg_tpa_failed_ticket_request"));
 		}
 	}
 
@@ -155,7 +155,7 @@ public class BORepositoryBarCode extends BORepositoryServiceApplication
 		String url = String.format(URL_TEMPLATE_ACCESSTOKEN, appId, appSecret);
 		JsonObject data = this.doGet(url);
 		if (data == null) {
-			throw new BadRequestException(I18N.prop("msg_tpa_faild_accesstoken_request"));
+			throw new BadRequestException(I18N.prop("msg_tpa_failed_accesstoken_request"));
 		}
 		JsonValue errNode = data.get("errmsg");
 		if (errNode != null) {
@@ -165,7 +165,7 @@ public class BORepositoryBarCode extends BORepositoryServiceApplication
 		if (accessTokenNode != null) {
 			return this.nodeValue(data, "access_token");
 		} else {
-			throw new BadRequestException(I18N.prop("msg_tpa_faild_accesstoken_request"));
+			throw new BadRequestException(I18N.prop("msg_tpa_failed_accesstoken_request"));
 		}
 	}
 
