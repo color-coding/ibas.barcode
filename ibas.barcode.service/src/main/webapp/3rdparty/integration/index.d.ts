@@ -1507,7 +1507,7 @@ declare namespace integration {
 declare namespace integration {
     namespace app {
         /** 编辑应用-集成任务 */
-        class IntegrationJobEditApp extends ibas.BOEditApplication<IIntegrationJobEditView, bo.IntegrationJob> {
+        class IntegrationJobEditApp extends ibas.BOEditService<IIntegrationJobEditView, bo.IntegrationJob> {
             /** 应用标识 */
             static APPLICATION_ID: string;
             /** 应用名称 */
@@ -1580,6 +1580,13 @@ declare namespace integration {
             showIntegrationJobActionCfgs(datas: bo.IntegrationJobActionCfg[]): void;
             /** 选择任务动作配置-配置项目 */
             chooseJobActionCfgConfigItemEvent: Function;
+        }
+        /** IntegrationJob编辑服务映射 */
+        class IntegrationJobEditServiceMapping extends ibas.BOEditServiceMapping {
+            /** 构造函数 */
+            constructor();
+            /** 创建服务实例 */
+            create(): ibas.IService<ibas.IBOEditServiceCaller<bo.IntegrationJob>>;
         }
     }
 }
