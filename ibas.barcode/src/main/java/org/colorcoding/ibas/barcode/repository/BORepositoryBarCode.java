@@ -1,17 +1,18 @@
 package org.colorcoding.ibas.barcode.repository;
 
 import java.io.IOException;
+import java.net.URI;
 import java.net.URL;
 import java.net.URLConnection;
 import java.security.MessageDigest;
 import java.util.Formatter;
 import java.util.UUID;
 
-import javax.json.Json;
-import javax.json.JsonObject;
-import javax.json.JsonObjectBuilder;
-import javax.json.JsonValue;
-import javax.ws.rs.BadRequestException;
+import jakarta.json.Json;
+import jakarta.json.JsonObject;
+import jakarta.json.JsonObjectBuilder;
+import jakarta.json.JsonValue;
+import jakarta.ws.rs.BadRequestException;
 
 import org.colorcoding.ibas.bobas.common.Criteria;
 import org.colorcoding.ibas.bobas.common.ICondition;
@@ -179,7 +180,7 @@ public class BORepositoryBarCode extends BORepositoryServiceApplication
 
 	protected JsonObject doGet(String url) throws IOException {
 		Logger.log(MessageLevel.DEBUG, MSG_CONNECTING_URL, url);
-		URL realUrl = new URL(url);
+		URL realUrl = URI.create(url).toURL();
 		// 打开和URL之间的连接
 		URLConnection connection = realUrl.openConnection();
 		// 设置通用的请求属性
